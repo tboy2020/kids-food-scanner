@@ -14,6 +14,19 @@ body{background:#0f1117;font-family:'DM Sans',sans-serif;min-height:100vh;paddin
 .hdr-sub{color:#8b92a8;font-size:12px;margin-top:4px}
 .wrap{max-width:460px;margin:0 auto;padding:18px 14px 0}
 
+/* API Key setup */
+#apiSetup{background:#1a1d27;border:1px solid #2a3a5a;border-radius:14px;padding:18px;margin-bottom:16px}
+#apiSetup.hidden{display:none}
+.setup-title{color:#6ee7f7;font-family:'Bebas Neue',cursive;font-size:17px;letter-spacing:2px;margin-bottom:6px}
+.setup-desc{color:#8b92a8;font-size:12px;margin-bottom:12px;line-height:1.5}
+.setup-desc a{color:#6ee7f7}
+.key-row{display:flex;gap:8px}
+#apiKeyInput{flex:1;background:#0f1117;border:1px solid #2a2d3a;border-radius:8px;padding:10px 12px;color:#f0f4ff;font-size:13px;font-family:'DM Sans',sans-serif;outline:none}
+#apiKeyInput:focus{border-color:#6ee7f755}
+#btnSaveKey{background:linear-gradient(135deg,#6ee7f7,#3b82f6);border:none;border-radius:8px;padding:10px 16px;color:#0f1117;font-family:'Bebas Neue',cursive;font-size:15px;letter-spacing:1px;cursor:pointer;white-space:nowrap}
+.key-saved{color:#22c55e;font-size:11px;margin-top:6px;display:none}
+.key-change{color:#8b92a8;font-size:11px;margin-top:6px;cursor:pointer;text-decoration:underline;display:none}
+
 /* Upload */
 #dropZone{border:2px dashed #2a2d3a;border-radius:14px;cursor:pointer;margin-bottom:12px;overflow:hidden;background:#1a1d27;padding:32px 16px;text-align:center;transition:border-color .3s}
 #dropZone.hasImg{padding:0;border-color:#6ee7f755}
@@ -22,8 +35,8 @@ body{background:#0f1117;font-family:'DM Sans',sans-serif;min-height:100vh;paddin
 #dropZone .lbl{color:#f0f4ff;font-weight:600;font-size:15px}
 #dropZone .sub{color:#8b92a8;font-size:13px;margin-top:3px}
 
-/* Status bar */
-#statusBar{background:#1a1d27;border:1px solid #2a2d3a;border-radius:10px;padding:10px 14px;margin-bottom:12px;font-size:12px;color:#8b92a8;font-family:monospace;display:none;min-height:36px;word-break:break-all}
+/* Status */
+#statusBar{background:#1a1d27;border:1px solid #2a2d3a;border-radius:10px;padding:10px 14px;margin-bottom:12px;font-size:12px;color:#8b92a8;font-family:monospace;display:none;word-break:break-all}
 #statusBar.visible{display:block}
 
 /* Buttons */
@@ -40,8 +53,6 @@ body{background:#0f1117;font-family:'DM Sans',sans-serif;min-height:100vh;paddin
 /* Results */
 #results{display:none}
 #results.visible{display:block;animation:fadeIn .4s ease}
-
-/* Product card */
 .pcard{background:#1a1d27;border-radius:14px;padding:14px 18px;margin-bottom:14px;border:1px solid #2a2d3a;display:flex;justify-content:space-between;align-items:center}
 .pname{color:#f0f4ff;font-weight:700;font-size:15px;margin-bottom:2px}
 .pserv{color:#8b92a8;font-size:12px}
@@ -51,33 +62,24 @@ body{background:#0f1117;font-family:'DM Sans',sans-serif;min-height:100vh;paddin
 .snum{font-family:'Bebas Neue',cursive;font-size:17px;line-height:1}
 .sdenom{color:#8b92a8;font-size:9px}
 .slabel{color:#8b92a8;font-size:10px;margin-top:3px;text-align:center}
-
-/* Verdict */
 .vdict{border-radius:14px;padding:16px 18px;margin-bottom:16px;display:flex;align-items:center;gap:12px}
 .vico{font-size:34px;line-height:1}
 .vtitle{font-family:'Bebas Neue',cursive;font-size:20px;letter-spacing:2px;margin-bottom:2px}
 .vreason{color:#8b92a8;font-size:12px;line-height:1.4}
-
-/* Dashboard */
 .dash{background:#1a1d27;border-radius:14px;padding:16px 18px;margin-bottom:14px;border:1px solid #2a2d3a}
 .dashtitle{color:#f0f4ff;font-family:'Bebas Neue',cursive;font-size:17px;letter-spacing:2px;margin-bottom:14px}
-.srow{margin-bottom:16px}
-.srow:last-child{margin-bottom:0}
+.srow{margin-bottom:16px}.srow:last-child{margin-bottom:0}
 .stop{display:flex;justify-content:space-between;margin-bottom:5px;align-items:center}
 .slbl{color:#f0f4ff;font-size:13px;font-weight:600}
 .sval{font-family:monospace;font-size:13px;font-weight:700}
 .stag{font-weight:400;font-size:11px;margin-left:5px;color:#8b92a8}
 .bbg{background:#2a2d3a;border-radius:99px;height:9px;overflow:hidden}
 .bfill{height:100%;border-radius:99px}
-
-/* Pair with */
 .pair{background:#161c2a;border:1.5px solid #2a3a5a;border-radius:14px;padding:14px 18px;margin-bottom:14px}
 .pairtitle{color:#6ee7f7;font-family:'Bebas Neue',cursive;font-size:17px;letter-spacing:2px;margin-bottom:10px}
 .chips{display:flex;flex-wrap:wrap;gap:8px}
 .chip{background:#1e2a3a;border-radius:99px;padding:6px 12px;color:#f0f4ff;font-size:12px;border:1px solid #2a3a5a;display:flex;align-items:center;gap:5px}
 .chipr{color:#8b92a8;font-size:10px}
-
-/* Raw */
 #rawToggle{background:transparent;border:1px solid #2a2d3a;color:#8b92a8;border-radius:8px;padding:5px 11px;font-size:11px;cursor:pointer;margin-bottom:6px;font-family:'DM Sans',sans-serif}
 #rawBox{background:#0a0a0a;border-radius:8px;padding:10px;margin-bottom:12px;font-size:10px;color:#6ee7f799;white-space:pre-wrap;font-family:monospace;display:none}
 #btnAgain{width:100%;padding:11px;border-radius:12px;border:1px solid #2a2d3a;background:transparent;color:#8b92a8;font-size:13px;cursor:pointer;font-family:'DM Sans',sans-serif}
@@ -96,6 +98,20 @@ body{background:#0f1117;font-family:'DM Sans',sans-serif;min-height:100vh;paddin
 </div>
 
 <div class="wrap">
+
+  <!-- API Key Setup -->
+  <div id="apiSetup">
+    <div class="setup-title">🔑 ENTER YOUR API KEY</div>
+    <div class="setup-desc">This app uses Claude AI to read nutrition labels. Enter your Anthropic API key below — it's saved on your device only.<br/><br/>Get a free key at <a href="https://console.anthropic.com" target="_blank">console.anthropic.com</a></div>
+    <div class="key-row">
+      <input type="password" id="apiKeyInput" placeholder="sk-ant-api03-..." autocomplete="off" autocorrect="off" spellcheck="false"/>
+      <button id="btnSaveKey" onclick="saveKey()">SAVE</button>
+    </div>
+    <div class="key-saved" id="keySaved">✅ Key saved! Ready to scan.</div>
+    <div class="key-change" id="keyChange" onclick="changeKey()">Change API key</div>
+  </div>
+
+  <!-- Upload -->
   <div id="dropZone" onclick="document.getElementById('fileIn').click()">
     <div class="ico">📷</div>
     <div class="lbl">Tap to snap or upload</div>
@@ -125,7 +141,6 @@ body{background:#0f1117;font-family:'DM Sans',sans-serif;min-height:100vh;paddin
         <div class="slabel">KID SCORE</div>
       </div>
     </div>
-
     <div class="vdict" id="rVerdict">
       <div class="vico" id="rVIco"></div>
       <div>
@@ -133,17 +148,14 @@ body{background:#0f1117;font-family:'DM Sans',sans-serif;min-height:100vh;paddin
         <div class="vreason" id="rVReason"></div>
       </div>
     </div>
-
     <div class="dash">
       <div class="dashtitle">📊 NUTRITION DASHBOARD</div>
       <div id="rBars"></div>
     </div>
-
     <div class="pair">
       <div class="pairtitle">🥗 PAIR IT WITH</div>
       <div class="chips" id="rChips"></div>
     </div>
-
     <button id="rawToggle" onclick="toggleRaw()">▼ Show raw reading</button>
     <div id="rawBox"></div>
     <button id="btnAgain" onclick="resetAll()">📷 Scan Another Product</button>
@@ -152,149 +164,163 @@ body{background:#0f1117;font-family:'DM Sans',sans-serif;min-height:100vh;paddin
 
 <script>
 'use strict';
-var _b64 = null, _raw = '';
+var _b64=null, _raw='';
 
-/* ── Image handling ── */
-function onFile(inp) {
-  var file = inp.files[0];
-  if (!file) return;
+/* ── API Key ── */
+function loadKey(){
+  var k=localStorage.getItem('kfs_apikey')||'';
+  if(k){
+    document.getElementById('apiKeyInput').value=k;
+    document.getElementById('keySaved').style.display='block';
+    document.getElementById('keyChange').style.display='block';
+    document.getElementById('btnSaveKey').style.display='none';
+    document.getElementById('apiKeyInput').style.display='none';
+  }
+}
+function saveKey(){
+  var k=document.getElementById('apiKeyInput').value.trim();
+  if(!k||!k.startsWith('sk-')){alert('Please enter a valid Anthropic API key (starts with sk-)');return;}
+  localStorage.setItem('kfs_apikey',k);
+  document.getElementById('keySaved').style.display='block';
+  document.getElementById('keyChange').style.display='block';
+  document.getElementById('btnSaveKey').style.display='none';
+  document.getElementById('apiKeyInput').style.display='none';
+}
+function changeKey(){
+  document.getElementById('apiKeyInput').style.display='block';
+  document.getElementById('btnSaveKey').style.display='block';
+  document.getElementById('keySaved').style.display='none';
+  document.getElementById('keyChange').style.display='none';
+  document.getElementById('apiKeyInput').value=localStorage.getItem('kfs_apikey')||'';
+}
+function getKey(){return localStorage.getItem('kfs_apikey')||'';}
+
+/* ── Image ── */
+function onFile(inp){
+  var file=inp.files[0]; if(!file)return;
   resetSoft();
   status('Reading image...');
-  var fr = new FileReader();
-  fr.onload = function(e) {
-    var url = e.target.result;
-    var dz = document.getElementById('dropZone');
+  var fr=new FileReader();
+  fr.onload=function(e){
+    var url=e.target.result;
+    var dz=document.getElementById('dropZone');
     dz.classList.add('hasImg');
-    dz.innerHTML = '<img src="'+url+'" alt="label"/>';
+    dz.innerHTML='<img src="'+url+'" alt="label"/>';
     status('Compressing image...');
-    compressToBase64(url, 900, 0.65, function(b64) {
-      _b64 = b64;
-      var kb = Math.round(b64.length * 0.75 / 1024);
-      status('✅ Ready — compressed to ' + kb + 'KB');
-      var btn = document.getElementById('btnAnalyze');
-      btn.className = 'ready';
-      btn.disabled = false;
-      btn.textContent = 'ANALYZE FOR KIDS 🔍';
+    compressToBase64(url,900,0.65,function(b64){
+      _b64=b64;
+      var kb=Math.round(b64.length*0.75/1024);
+      status('✅ Ready — '+kb+'KB compressed. Tap Analyze!');
+      var btn=document.getElementById('btnAnalyze');
+      btn.className='ready'; btn.disabled=false;
+      btn.textContent='ANALYZE FOR KIDS 🔍';
     });
   };
   fr.readAsDataURL(file);
 }
 
-function compressToBase64(dataUrl, maxW, quality, cb) {
-  var img = new Image();
-  img.onload = function() {
-    var w = img.width, h = img.height;
-    if (w > maxW) { h = Math.round(h * maxW / w); w = maxW; }
-    var c = document.createElement('canvas');
-    c.width = w; c.height = h;
-    c.getContext('2d').drawImage(img, 0, 0, w, h);
-    var result = c.toDataURL('image/jpeg', quality);
-    cb(result.split(',')[1]);
+function compressToBase64(dataUrl,maxW,quality,cb){
+  var img=new Image();
+  img.onload=function(){
+    var w=img.width,h=img.height;
+    if(w>maxW){h=Math.round(h*maxW/w);w=maxW;}
+    var c=document.createElement('canvas');
+    c.width=w;c.height=h;
+    c.getContext('2d').drawImage(img,0,0,w,h);
+    cb(c.toDataURL('image/jpeg',quality).split(',')[1]);
   };
-  img.onerror = function() {
-    status('⚠️ Could not load image');
-  };
-  img.src = dataUrl;
+  img.src=dataUrl;
 }
 
-/* ── API call ── */
-async function analyze() {
-  if (!_b64) return;
-  var btn = document.getElementById('btnAnalyze');
-  btn.className = 'busy';
-  btn.disabled = true;
-  btn.innerHTML = '<span class="spinning">⚙️</span> READING LABEL...';
-  document.getElementById('errBox').className = '';
-  status('Calling Claude API...');
+/* ── Analyze ── */
+async function analyze(){
+  if(!_b64)return;
+  var apiKey=getKey();
+  if(!apiKey){alert('Please save your Anthropic API key first.');return;}
 
-  try {
-    var resp = await fetch('https://api.anthropic.com/v1/messages', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'anthropic-dangerous-direct-browser-access': 'true'
+  var btn=document.getElementById('btnAnalyze');
+  btn.className='busy'; btn.disabled=true;
+  btn.innerHTML='<span class="spinning">⚙️</span> READING LABEL...';
+  document.getElementById('errBox').className='';
+  status('Calling Claude AI...');
+
+  try{
+    var resp=await fetch('https://api.anthropic.com/v1/messages',{
+      method:'POST',
+      headers:{
+        'Content-Type':'application/json',
+        'x-api-key':apiKey,
+        'anthropic-version':'2023-06-01',
+        'anthropic-dangerous-direct-browser-access':'true'
       },
-      body: JSON.stringify({
-        model: 'claude-sonnet-4-20250514',
-        max_tokens: 400,
-        messages: [{
-          role: 'user',
-          content: [
-            { type: 'image', source: { type: 'base64', media_type: 'image/jpeg', data: _b64 } },
-            { type: 'text', text: 'Read this nutrition label. Output ONLY these 10 lines, nothing else:\nProduct name: \nServing size: \nCalories: \nTotal Fat: \nSaturated Fat: \nSodium: \nTotal Carbohydrate: \nTotal Sugars: \nAdded Sugars: \nProtein: ' }
+      body:JSON.stringify({
+        model:'claude-sonnet-4-20250514',
+        max_tokens:400,
+        messages:[{
+          role:'user',
+          content:[
+            {type:'image',source:{type:'base64',media_type:'image/jpeg',data:_b64}},
+            {type:'text',text:'Read this nutrition label. Output ONLY these 10 lines:\nProduct name: \nServing size: \nCalories: \nTotal Fat: \nSaturated Fat: \nSodium: \nTotal Carbohydrate: \nTotal Sugars: \nAdded Sugars: \nProtein: '}
           ]
         }]
       })
     });
 
-    status('HTTP ' + resp.status + ' received...');
-    var bodyText = await resp.text();
-    status('Response length: ' + bodyText.length + ' chars');
-
-    if (!resp.ok) {
-      throw new Error('HTTP ' + resp.status + ': ' + bodyText.slice(0, 200));
-    }
+    status('HTTP '+resp.status+' received...');
+    var bodyText=await resp.text();
+    if(!resp.ok)throw new Error('HTTP '+resp.status+': '+bodyText.slice(0,200));
 
     var json;
-    try { json = JSON.parse(bodyText); }
-    catch(pe) { throw new Error('JSON parse failed: ' + bodyText.slice(0, 150)); }
+    try{json=JSON.parse(bodyText);}
+    catch(pe){throw new Error('Bad JSON: '+bodyText.slice(0,100));}
 
-    var text = '';
-    if (json.content && Array.isArray(json.content)) {
-      for (var i = 0; i < json.content.length; i++) {
-        if (json.content[i].type === 'text') { text = json.content[i].text; break; }
+    var text='';
+    if(json.content&&Array.isArray(json.content)){
+      for(var i=0;i<json.content.length;i++){
+        if(json.content[i].type==='text'){text=json.content[i].text;break;}
       }
     }
-    if (!text) throw new Error('No text in response. Keys: ' + Object.keys(json).join(', '));
-
-    status('✅ Got response (' + text.length + ' chars)');
-    _raw = text;
+    if(!text)throw new Error('No text in response');
+    status('✅ Got response — building dashboard...');
+    _raw=text;
     render(buildResult(text));
 
-  } catch(e) {
-    status('❌ Failed: ' + e.message);
+  }catch(e){
+    status('❌ '+e.message);
     showErr(e.message);
-    btn.className = 'ready';
-    btn.disabled = false;
-    btn.textContent = 'RETRY 🔍';
+    btn.className='ready'; btn.disabled=false; btn.textContent='RETRY 🔍';
   }
 }
 
 /* ── Parse ── */
-function num(text, pats) {
-  for (var i=0;i<pats.length;i++) { var m=text.match(pats[i]); if(m) return parseFloat(m[1]); }
-  return 0;
-}
-function str(text, pats, fb) {
-  for (var i=0;i<pats.length;i++) { var m=text.match(pats[i]); if(m) return m[1].trim(); }
-  return fb||'';
-}
+function num(t,pats){for(var i=0;i<pats.length;i++){var m=t.match(pats[i]);if(m)return parseFloat(m[1]);}return 0;}
+function str(t,pats,fb){for(var i=0;i<pats.length;i++){var m=t.match(pats[i]);if(m)return m[1].trim();}return fb||'';}
 
-function buildResult(t) {
-  var sugar  = num(t,[/added sugars?\s*[:\-]?\s*(\d+(?:\.\d+)?)\s*g/i,/added sugars?\s*(\d+)/i]);
-  var sodium = num(t,[/sodium\s*[:\-]?\s*(\d+(?:\.\d+)?)\s*mg/i,/sodium[^0-9]*(\d+)/i]);
-  var prot   = num(t,[/protein\s*[:\-]?\s*(\d+(?:\.\d+)?)\s*g/i,/protein[^0-9]*(\d+)/i]);
-  var cals   = num(t,[/calories\s*[:\-]?\s*(\d+)/i,/calories[^0-9]*(\d+)/i]);
-  var satf   = num(t,[/saturated fat\s*[:\-]?\s*(\d+(?:\.\d+)?)\s*g/i,/saturated fat[^0-9]*(\d+)/i]);
-  var prod   = str(t,[/product(?:\s+name)?\s*[:\-]\s*([^\n]+)/i],'Food Product');
-  var serv   = str(t,[/serving size\s*[:\-]\s*([^\n]+)/i,/serving\s*[:\-]\s*([^\n]+)/i],'1 serving');
+function buildResult(t){
+  var sugar =num(t,[/added sugars?\s*[:\-]?\s*(\d+(?:\.\d+)?)\s*g/i,/added sugars?\s*(\d+)/i]);
+  var sodium=num(t,[/sodium\s*[:\-]?\s*(\d+(?:\.\d+)?)\s*mg/i,/sodium[^0-9]*(\d+)/i]);
+  var prot  =num(t,[/protein\s*[:\-]?\s*(\d+(?:\.\d+)?)\s*g/i,/protein[^0-9]*(\d+)/i]);
+  var cals  =num(t,[/calories\s*[:\-]?\s*(\d+)/i,/calories[^0-9]*(\d+)/i]);
+  var satf  =num(t,[/saturated fat\s*[:\-]?\s*(\d+(?:\.\d+)?)\s*g/i,/saturated fat[^0-9]*(\d+)/i]);
+  var prod  =str(t,[/product(?:\s+name)?\s*[:\-]\s*([^\n]+)/i],'Food Product');
+  var serv  =str(t,[/serving size\s*[:\-]\s*([^\n]+)/i,/serving\s*[:\-]\s*([^\n]+)/i],'1 serving');
 
-  var sl = sugar>10?'alert':sugar>5?'watch':'good';
-  var nl = sodium>400?'alert':sodium>200?'watch':'good';
-  var pl = prot>=8?'good':prot>=4?'watch':'alert';
-  var cl = cals>350?'alert':cals>200?'watch':'good';
-  var fl = satf>4?'alert':satf>2?'watch':'good';
+  var sl=sugar>10?'alert':sugar>5?'watch':'good';
+  var nl=sodium>400?'alert':sodium>200?'watch':'good';
+  var pl=prot>=8?'good':prot>=4?'watch':'alert';
+  var cl=cals>350?'alert':cals>200?'watch':'good';
+  var fl=satf>4?'alert':satf>2?'watch':'good';
+  var skip=sugar>10||sodium>500||(cals>350&&prot<5);
 
-  var skip = sugar>10||sodium>500||(cals>350&&prot<5);
-  var reason = 'Nutrition profile is acceptable for kids in moderation.';
-  if (sugar>10) reason = sugar+'g added sugar = '+Math.round(sugar/25*100)+'% of a child\'s daily limit.';
-  else if (sodium>500) reason = sodium+'mg sodium is very high for children.';
-  else if (prot<3&&cals>200) reason = 'Low protein — pair with something more filling.';
+  var reason='Nutrition profile is acceptable for kids in moderation.';
+  if(sugar>10)reason=sugar+'g added sugar = '+Math.round(sugar/25*100)+'% of a child\'s daily limit.';
+  else if(sodium>500)reason=sodium+'mg sodium is very high for children.';
+  else if(prot<3&&cals>200)reason='Low protein — pair with something more filling.';
 
   var score=70;
   if(sugar>10)score-=35;else if(sugar>5)score-=15;
   if(sodium>500)score-=25;else if(sodium>300)score-=10;
-  if(prot<3)score-=10; if(satf>5)score-=10;
+  if(prot<3)score-=10;if(satf>5)score-=10;
   score=Math.max(5,Math.min(100,score));
 
   var supps=[];
@@ -304,7 +330,7 @@ function buildResult(t) {
   supps.push({e:'🍎',n:'Apple slices',r:'fiber & vitamins'});
   if(supps.length<3)supps.push({e:'🥛',n:'Milk',r:'calcium & protein'});
 
-  return {prod,serv,sugar,sodium,prot,cals,satf,sl,nl,pl,cl,fl,skip,reason,score,supps:supps.slice(0,4)};
+  return{prod,serv,sugar,sodium,prot,cals,satf,sl,nl,pl,cl,fl,skip,reason,score,supps:supps.slice(0,4)};
 }
 
 /* ── Render ── */
@@ -312,21 +338,20 @@ function lc(l){return l==='good'?'#22c55e':l==='watch'?'#f59e0b':'#ef4444';}
 function lt(l){return l==='good'?'✓ Good':l==='watch'?'⚠ Watch':'✗ High';}
 
 function bar(lbl,val,max,unit,lvl,emoji){
-  var pct=Math.min(val/max*100,100), c=lc(lvl);
+  var pct=Math.min(val/max*100,100),c=lc(lvl);
   return '<div class="srow"><div class="stop"><span class="slbl">'+emoji+' '+lbl+'</span>'
     +'<span class="sval" style="color:'+c+'">'+val+unit+'<span class="stag">'+lt(lvl)+'</span></span></div>'
     +'<div class="bbg"><div class="bfill" style="width:'+pct+'%;background:linear-gradient(90deg,'+c+'99,'+c+');box-shadow:0 0 6px '+c+'55"></div></div></div>';
 }
 
 function render(r){
-  var sc=r.score, cc=sc>=70?'#22c55e':sc>=45?'#f59e0b':'#ef4444';
+  var sc=r.score,cc=sc>=70?'#22c55e':sc>=45?'#f59e0b':'#ef4444';
   document.getElementById('rName').textContent=r.prod;
   document.getElementById('rServ').textContent='Serving: '+r.serv;
   document.getElementById('rRing').style.background='conic-gradient('+cc+' '+sc+'%, #2a2d3a '+sc+'%)';
   document.getElementById('rScore').style.color=cc;
   document.getElementById('rScore').textContent=sc;
-
-  var ok=!r.skip, vc=ok?'#22c55e':'#ef4444';
+  var ok=!r.skip,vc=ok?'#22c55e':'#ef4444';
   var vb=document.getElementById('rVerdict');
   vb.style.background=ok?'#16271e':'#271616';
   vb.style.border='1.5px solid '+vc;
@@ -334,47 +359,31 @@ function render(r){
   document.getElementById('rVTitle').style.color=vc;
   document.getElementById('rVTitle').textContent=ok?'GOOD FOR KIDS':'NOT RECOMMENDED FOR KIDS';
   document.getElementById('rVReason').textContent=r.reason;
-
   document.getElementById('rBars').innerHTML=
     bar('Added Sugar',r.sugar,25,'g',r.sl,'🍬')+
     bar('Sodium',r.sodium,1200,'mg',r.nl,'🧂')+
     bar('Protein',r.prot,20,'g',r.pl,'💪')+
     bar('Calories',r.cals,500,' kcal',r.cl,'🔥')+
     bar('Saturated Fat',r.satf,15,'g',r.fl,'🧈');
-
   document.getElementById('rChips').innerHTML=r.supps.map(function(s){
     return '<div class="chip"><span>'+s.e+'</span><span>'+s.n+'</span><span class="chipr">— '+s.r+'</span></div>';
   }).join('');
-
   document.getElementById('rawBox').textContent=_raw;
   document.getElementById('results').className='visible';
   document.getElementById('btnAnalyze').style.display='none';
 }
 
 /* ── Helpers ── */
-function status(msg){
-  var b=document.getElementById('statusBar');
-  b.className='visible';
-  b.textContent=msg;
-}
-function showErr(msg){
-  var b=document.getElementById('errBox');
-  b.className='visible';
-  document.getElementById('errMsg').textContent=msg;
-}
-function toggleRaw(){
-  var b=document.getElementById('rawBox'), btn=document.getElementById('rawToggle');
-  var v=b.style.display==='block';
-  b.style.display=v?'none':'block';
-  btn.textContent=v?'▼ Show raw reading':'▲ Hide raw reading';
-}
+function status(msg){var b=document.getElementById('statusBar');b.className='visible';b.textContent=msg;}
+function showErr(msg){var b=document.getElementById('errBox');b.className='visible';document.getElementById('errMsg').textContent=msg;}
+function toggleRaw(){var b=document.getElementById('rawBox'),btn=document.getElementById('rawToggle');var v=b.style.display==='block';b.style.display=v?'none':'block';btn.textContent=v?'▼ Show raw reading':'▲ Hide raw reading';}
 function resetSoft(){
-  _b64=null; _raw='';
+  _b64=null;_raw='';
   document.getElementById('results').className='';
   document.getElementById('errBox').className='';
   document.getElementById('statusBar').className='';
   var btn=document.getElementById('btnAnalyze');
-  btn.className='busy'; btn.disabled=true; btn.textContent='⏳ PREPARING...'; btn.style.display='';
+  btn.className='busy';btn.disabled=true;btn.textContent='⏳ PREPARING...';btn.style.display='';
 }
 function resetAll(){
   resetSoft();
@@ -385,6 +394,9 @@ function resetAll(){
   document.getElementById('statusBar').className='';
   document.getElementById('btnAnalyze').style.display='none';
 }
+
+// Init
+loadKey();
 </script>
 </body>
 </html>
