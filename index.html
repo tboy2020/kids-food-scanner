@@ -717,13 +717,21 @@ function buildResult(t){
   if(prot>=8)score+=10;if(sugar<=2)score+=10;
   score=Math.max(5,Math.min(100,score));
 
-  // Revised values (+20%)
-  var rSugar=Math.round(sugar*1.2*10)/10;
-  var rSodium=Math.round(sodium*1.2);
-  var rProt=Math.round(prot*0.8*10)/10; // protein can be 20% LESS
-  var rCals=Math.round(cals*1.2);
-  var rSatf=Math.round(satf*1.2*10)/10;
-  var rCarb=Math.round(carb*1.2);
+  // Revised values — FDA rounding floor fix
+  // FDA allows rounding to 0 for anything <0.5g (sugar/fat) or <5mg (sodium)
+  // So 0g labeled = up to 0.49g real; 0mg sodium = up to 4mg real
+  // Trans fat most abused — 0g label can legally hide up to 0.49g per serving
+  var rSugar  = sugar===0  ? 0.4 : Math.round(sugar*1.2*10)/10;
+  var rSodium = sodium===0 ? 50  : Math.round(sodium*1.2);
+  var rProt   = Math.round(prot*0.8*10)/10;
+  var rCals   = cals===0   ? 0   : Math.round(cals*1.2);
+  var rSatf   = satf===0   ? 0.4 : Math.round(satf*1.2*10)/10;
+  var rCarb   = carb===0   ? 0   : Math.round(carb*1.2);
+
+  // Display strings — special note for zero-labeled values
+  var rSugarStr  = sugar===0  ? 'up to 0.4g ⚠️' : rSugar+'g';
+  var rSodiumStr = sodium===0 ? 'up to 50mg ⚠️'  : rSodium+'mg';
+  var rSatfStr   = satf===0   ? 'up to 0.4g ⚠️' : rSatf+'g';
 
   // Revised levels
   var rsl=rSugar>10?'alert':rSugar>5?'watch':'good';
@@ -733,11 +741,18 @@ function buildResult(t){
   var rfl=rSatf>4?'alert':rSatf>2?'watch':'good';
   var rbl=rCarb>50?'alert':rCarb>30?'watch':'good';
 
+  // Zero-labeled = always watch since true zero is impossible in processed food
+  if(sugar===0)  rsl='watch';
+  if(sodium===0) rnl='watch';
+  if(satf===0)   rfl='watch';
+
   var rSkip=rSugar>10||rSodium>500||(rCals>350&&rProt<5);
 
   return{prod,serv:servRaw,servG,ingr,
     sugar,sodium,prot,cals,satf,carb,sl,nl,pl,cl,fl,bl,
-    rSugar,rSodium,rProt,rCals,rSatf,rCarb,rsl,rnl,rpl,rcl,rfl,rbl,
+    rSugar,rSodium,rProt,rCals,rSatf,rCarb,
+    rSugarStr,rSodiumStr,rSatfStr,
+    rsl,rnl,rpl,rcl,rfl,rbl,
     skip,rSkip,reason,score,protBarPct};
 }
 
@@ -974,11 +989,11 @@ function render(r){
   if(prefs.showVariance){
     document.getElementById('rRealityBox').style.display='block';
     var rows=[
-      {lbl:'🍬 Sugar',orig:r.sugar+'g',rev:r.rSugar+'g',ol:r.sl,rl:r.rsl},
-      {lbl:'🧂 Sodium',orig:r.sodium+'mg',rev:r.rSodium+'mg',ol:r.nl,rl:r.rnl},
+      {lbl:'🍬 Sugar',orig:r.sugar+'g',rev:r.rSugarStr,ol:r.sl,rl:r.rsl,zeroNote:r.sugar===0},
+      {lbl:'🧂 Sodium',orig:r.sodium+'mg',rev:r.rSodiumStr,ol:r.nl,rl:r.rnl,zeroNote:r.sodium===0},
       {lbl:'💪 Protein',orig:r.prot+'g',rev:r.rProt+'g',ol:r.pl,rl:r.rpl,isProt:true},
       {lbl:'🔥 Calories',orig:r.cals+' kcal',rev:r.rCals+' kcal',ol:r.cl,rl:r.rcl},
-      {lbl:'🧈 Sat Fat',orig:r.satf+'g',rev:r.rSatf+'g',ol:r.fl,rl:r.rfl},
+      {lbl:'🧈 Sat Fat',orig:r.satf+'g',rev:r.rSatfStr,ol:r.fl,rl:r.rfl,zeroNote:r.satf===0},
       {lbl:'🍞 Carbs',orig:r.carb+'g',rev:r.rCarb+'g',ol:r.bl,rl:r.rbl},
     ];
     var thtml='';
@@ -991,7 +1006,13 @@ function render(r){
       thtml+='<td style="color:'+lc(row.rl)+'">'+lt(row.rl,row.isProt)+'</td>';
       thtml+='</tr>';
     });
+    var hasZeroNote=rows.some(function(r){return r.zeroNote;});
     document.getElementById('rRealityTable').innerHTML=thtml;
+    // Add footnote if any zero values exist
+    if(hasZeroNote){
+      var footnote='<tr><td colspan="4" style="color:#f59e0b;font-size:10px;padding:8px 6px;line-height:1.4">* FDA rounding rule: values shown as 0 on labels may legally contain up to 0.49g (fat/sugar) or trace sodium per serving. True zero is rare in processed foods.</td></tr>';
+      document.getElementById('rRealityTable').innerHTML+=footnote;
+    }
 
     // REVISED RECOMMENDATION
     var revOk=!r.rSkip;
@@ -1017,10 +1038,10 @@ function render(r){
 
     // Watch items
     var watches=[];
-    if(r.rSodium>200)watches.push('💡 Sodium could reach up to '+r.rSodium+'mg — '+Math.round(r.rSodium/1200*100)+'% of young child\'s daily limit.');
-    if(r.rSugar>5)watches.push('💡 Sugar could reach '+r.rSugar+'g — check ingredients for hidden sugar aliases.');
+    if(r.rSodium>200||r.sodium===0)watches.push('💡 Sodium could reach '+r.rSodiumStr+' — '+Math.round(r.rSodium/1200*100)+'% of young child\'s daily limit.');
+    if(r.rSugar>5||r.sugar===0)watches.push('💡 Sugar could reach '+r.rSugarStr+(r.sugar===0?' — FDA allows rounding 0g on label':' — check ingredients for hidden sugar aliases')+'.');
     if(r.rProt<4)watches.push('💡 Protein as low as '+r.rProt+'g — definitely pair with a protein-rich food.');
-    if(r.rSatf>2)watches.push('💡 Saturated fat could reach '+r.rSatf+'g — moderate serving size.');
+    if(r.rSatf>2||r.satf===0)watches.push('💡 Sat fat could reach '+r.rSatfStr+(r.satf===0?' — 0g label can hide up to 0.49g per serving':' — moderate portion size')+'.');
     document.getElementById('rRevWatches').innerHTML=watches.map(function(w){return '<div class="revised-watch-item"><span>'+w+'</span></div>';}).join('');
   } else {
     document.getElementById('rRealityBox').style.display='none';
