@@ -1096,6 +1096,21 @@ function showErr(msg){var b=document.getElementById('errBox');b.className='visib
 function toggleRaw(){var b=document.getElementById('rawBox'),btn=document.getElementById('rawToggle');var v=b.style.display==='block';b.style.display=v?'none':'block';btn.textContent=v?'▼ Show raw reading':'▲ Hide raw reading';}
 function resetSoft(){_b64=null;_raw='';_curResult=null;_curServings=1;document.getElementById('results').className='';document.getElementById('errBox').className='';document.getElementById('statusBar').className='';document.getElementById('ateConfirmed').style.display='none';document.getElementById('skipLogged').style.display='none';var btn=document.getElementById('btnAnalyze');btn.className='busy';btn.disabled=true;btn.textContent='⏳ PREPARING...';btn.style.display='';}
 function resetAll(){resetSoft();var dz=document.getElementById('dropZone');dz.classList.remove('hasImg');dz.innerHTML='<div class="ico">📷</div><div class="lbl">Tap to snap or upload</div><div class="sub">Photo of a nutrition label</div>';document.getElementById('fileIn').value='';document.getElementById('statusBar').className='';document.getElementById('btnAnalyze').style.display='none';}
+// Poll textarea every second for API key - bypasses all iOS event issues
+setInterval(function(){
+  var inp=document.getElementById('apiKeyInput');
+  if(!inp||inp.style.display==='none')return;
+  var k=inp.value.trim();
+  if(k.length>20){
+    var st=document.getElementById('keyStatus');
+    if(st&&st.textContent!=='✅ Saving...'){
+      st.style.color='#22c55e';
+      st.textContent='✅ Saving...';
+      setTimeout(function(){trySaveKey();},300);
+    }
+  }
+},1000);
+
 // Register service worker for PWA
 if('serviceWorker' in navigator){
   navigator.serviceWorker.register('./sw.js').catch(function(){});
