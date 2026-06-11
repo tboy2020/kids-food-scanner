@@ -220,13 +220,13 @@ body{background:#0f1117;font-family:'DM Sans',sans-serif;min-height:100vh;paddin
 <div class="screen active" id="screenScanner">
   <div id="apiSetup">
     <div class="setup-title">🔑 API KEY REQUIRED</div>
-    <div class="setup-desc">Enter your Anthropic API key — saved on this device only.<br/><a href="https://console.anthropic.com" target="_blank">console.anthropic.com</a></div>
-    <div class="key-row">
-      <input type="password" id="apiKeyInput" placeholder="sk-ant-..." autocomplete="off" autocorrect="off" spellcheck="false"/>
-      <button id="btnSaveKey" onclick="saveKey()">SAVE</button>
+    <div class="setup-desc">Paste your key below then tap SAVE.<br/><a href="https://console.anthropic.com" target="_blank">console.anthropic.com</a></div>
+    <input type="text" id="apiKeyInput" placeholder="sk-ant-api03-..." autocomplete="off" autocorrect="off" autocapitalize="none" spellcheck="false" style="width:100%;background:#0f1117;border:1px solid #2a2d3a;border-radius:8px;padding:14px;color:#f0f4ff;font-size:13px;font-family:monospace;outline:none;-webkit-appearance:none;margin-bottom:10px;display:block;box-sizing:border-box"/>
+    <div id="btnSaveKey" onclick="saveKey()" style="width:100%;padding:16px;border-radius:10px;background:linear-gradient(135deg,#6ee7f7,#3b82f6);color:#0f1117;font-family:'Bebas Neue',cursive;font-size:20px;letter-spacing:3px;text-align:center;cursor:pointer;-webkit-tap-highlight-color:rgba(0,0,0,0);touch-action:manipulation;user-select:none;-webkit-user-select:none;margin-bottom:6px">
+      SAVE API KEY ✓
     </div>
-    <div class="key-saved" id="keySaved">✅ Key saved!</div>
-    <div class="key-change" id="keyChange" onclick="changeKey()">Change key</div>
+    <div class="key-saved" id="keySaved" style="display:none;color:#22c55e;font-size:11px;text-align:center;padding:4px 0">✅ Key saved! Ready to scan.</div>
+    <div class="key-change" id="keyChange" onclick="changeKey()" style="display:none;color:#8b92a8;font-size:11px;text-align:center;padding:4px 0;cursor:pointer;text-decoration:underline">Change API key</div>
   </div>
   <div id="dropZone" onclick="document.getElementById('fileIn').click()">
     <div class="ico">📷</div><div class="lbl">Tap to snap or upload</div><div class="sub">Photo of a nutrition label</div>
@@ -488,10 +488,32 @@ function setPeriod(p){
 /* ══ API KEY ══ */
 function loadKey(){
   var k=getKey();
-  if(k){document.getElementById('apiKeyInput').value=k;document.getElementById('keySaved').style.display='block';document.getElementById('keyChange').style.display='block';document.getElementById('btnSaveKey').style.display='none';document.getElementById('apiKeyInput').style.display='none';}
+  if(k){
+    document.getElementById('apiKeyInput').value=k;
+    document.getElementById('apiKeyInput').style.display='none';
+    document.getElementById('btnSaveKey').style.display='none';
+    document.getElementById('keySaved').style.display='block';
+    document.getElementById('keyChange').style.display='block';
+  }
 }
-function saveKey(){var k=document.getElementById('apiKeyInput').value.trim();if(!k||!k.startsWith('sk-')){alert('Please enter a valid key');return;}localStorage.setItem('kfs_apikey',k);document.getElementById('keySaved').style.display='block';document.getElementById('keyChange').style.display='block';document.getElementById('btnSaveKey').style.display='none';document.getElementById('apiKeyInput').style.display='none';}
-function changeKey(){document.getElementById('apiKeyInput').style.display='block';document.getElementById('btnSaveKey').style.display='block';document.getElementById('keySaved').style.display='none';document.getElementById('keyChange').style.display='none';document.getElementById('apiKeyInput').value=getKey();}
+function saveKey(){
+  var k=document.getElementById('apiKeyInput').value.trim();
+  if(!k){alert('Please paste your API key first');return;}
+  if(!k.startsWith('sk-')){alert('Key should start with sk-\nYou entered: '+k.slice(0,10)+'...');return;}
+  localStorage.setItem('kfs_apikey',k);
+  document.getElementById('apiKeyInput').style.display='none';
+  document.getElementById('btnSaveKey').style.display='none';
+  document.getElementById('keySaved').style.display='block';
+  document.getElementById('keyChange').style.display='block';
+  status('✅ API key saved! Ready to scan.');
+}
+function changeKey(){
+  document.getElementById('apiKeyInput').style.display='block';
+  document.getElementById('btnSaveKey').style.display='block';
+  document.getElementById('keySaved').style.display='none';
+  document.getElementById('keyChange').style.display='none';
+  document.getElementById('apiKeyInput').value=getKey();
+}
 
 /* ══ IMAGE ══ */
 function onFile(inp){
