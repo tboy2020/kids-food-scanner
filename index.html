@@ -220,21 +220,32 @@ body{background:#0f1117;font-family:'DM Sans',sans-serif;min-height:100vh;paddin
 <div class="screen active" id="screenScanner">
   <div id="apiSetup">
     <div class="setup-title">🔑 API KEY REQUIRED</div>
-    <div class="setup-desc" id="apiDesc">Paste your key below — <strong style="color:#6ee7f7">saves automatically</strong>.<br/><a href="https://console.anthropic.com" target="_blank">console.anthropic.com</a></div>
-    <input type="text" id="apiKeyInput"
-      placeholder="sk-ant-api03-..."
-      autocomplete="off" autocorrect="off" autocapitalize="none" spellcheck="false"
-      style="width:100%;background:#0f1117;border:2px solid #2a2d3a;border-radius:8px;padding:14px;color:#f0f4ff;font-size:13px;font-family:monospace;outline:none;-webkit-appearance:none;margin-top:10px;display:block;box-sizing:border-box"
-      onchange="tryAutoSave(this.value)"
-      onblur="tryAutoSave(this.value)"
-      oninput="onKeyInput(this.value)"
-    />
+    <div class="setup-desc" id="apiDesc">Paste key then tap <strong style="color:#6ee7f7">GO</strong> on keyboard.<br/><a href="https://console.anthropic.com" target="_blank">console.anthropic.com</a></div>
+    <form id="apiForm" onsubmit="formSaveKey();return false;" action="javascript:void(0)" style="margin-top:10px">
+      <input
+        type="text"
+        id="apiKeyInput"
+        name="apikey"
+        placeholder="sk-ant-api03-..."
+        autocomplete="off"
+        autocorrect="off"
+        autocapitalize="none"
+        spellcheck="false"
+        oninput="onKeyInput(this.value)"
+        style="width:100%;background:#0f1117;border:2px solid #2a2d3a;border-radius:8px;padding:14px;color:#f0f4ff;font-size:13px;font-family:monospace;outline:none;-webkit-appearance:none;display:block;box-sizing:border-box;margin-bottom:10px"
+      />
+      <input
+        type="submit"
+        value="SAVE API KEY"
+        style="width:100%;padding:16px;border-radius:10px;background:linear-gradient(135deg,#6ee7f7,#3b82f6);color:#0f1117;font-family:'Bebas Neue',cursive;font-size:20px;letter-spacing:3px;border:none;display:block;box-sizing:border-box;-webkit-appearance:none;appearance:none;cursor:pointer"
+      />
+    </form>
     <div id="keyProgress" style="height:4px;border-radius:99px;background:#2a2d3a;margin-top:8px;overflow:hidden">
       <div id="keyProgressBar" style="height:100%;width:0%;background:#6ee7f7;border-radius:99px;transition:width .3s"></div>
     </div>
-    <div id="keyHint" style="color:#8b92a8;font-size:11px;margin-top:6px;text-align:center">Paste your full API key above</div>
-    <div class="key-saved" id="keySaved" style="display:none;color:#22c55e;font-size:12px;text-align:center;padding:8px 0;font-weight:700">✅ Key saved! Tap "Tap to snap or upload" to start.</div>
-    <div id="keyChange" style="display:none;color:#8b92a8;font-size:11px;text-align:center;padding:4px 0;cursor:pointer;text-decoration:underline" ontouchend="changeKey()" onclick="changeKey()">Change API key</div>
+    <div id="keyHint" style="color:#8b92a8;font-size:11px;margin-top:6px;text-align:center">Paste your full key then tap SAVE API KEY or GO on keyboard</div>
+    <div id="keySaved" style="display:none;color:#22c55e;font-size:13px;text-align:center;padding:10px 0;font-weight:700">✅ Key saved! You can now scan labels.</div>
+    <div id="keyChange" style="display:none;color:#8b92a8;font-size:11px;text-align:center;padding:4px 0;cursor:pointer;text-decoration:underline" onclick="changeKey()">Change API key</div>
   </div>
   <div id="dropZone" onclick="document.getElementById('fileIn').click()">
     <div class="ico">📷</div><div class="lbl">Tap to snap or upload</div><div class="sub">Photo of a nutrition label</div>
@@ -497,11 +508,14 @@ function setPeriod(p){
 function loadKey(){
   var k=getKey();
   if(k){
-    document.getElementById('apiKeyInput').style.display='none';
+    var f=document.getElementById('apiForm');
+    if(f)f.style.display='none';
     document.getElementById('keySaved').style.display='block';
     document.getElementById('keyChange').style.display='block';
     document.getElementById('keyHint').style.display='none';
     document.getElementById('keyProgress').style.display='none';
+    var d=document.getElementById('apiDesc');
+    if(d)d.style.display='none';
   }
 }
 
@@ -537,17 +551,34 @@ function tryAutoSave(val){
   document.getElementById('apiDesc').style.display='none';
   status('✅ API key saved! Ready to scan.');
 }
-function saveKey(){
+function formSaveKey(){
   var k=document.getElementById('apiKeyInput').value.trim();
-  tryAutoSave(k);
+  if(!k||k.length<20){
+    document.getElementById('keyHint').style.color='#ef4444';
+    document.getElementById('keyHint').textContent='Please paste your full API key first';
+    return;
+  }
+  localStorage.setItem('kfs_apikey',k);
+  document.getElementById('apiForm').style.display='none';
+  document.getElementById('keyProgress').style.display='none';
+  document.getElementById('keyHint').style.display='none';
+  document.getElementById('apiDesc').style.display='none';
+  document.getElementById('keySaved').style.display='block';
+  document.getElementById('keyChange').style.display='block';
+  status('✅ API key saved! Ready to scan.');
+}
+function saveKey(){
+  formSaveKey();
 }
 function changeKey(){
-  document.getElementById('apiKeyInput').style.display='block';
+  var f=document.getElementById('apiForm');
+  if(f)f.style.display='block';
   document.getElementById('keySaved').style.display='none';
   document.getElementById('keyChange').style.display='none';
   document.getElementById('keyHint').style.display='block';
   document.getElementById('keyProgress').style.display='block';
-  document.getElementById('apiDesc').style.display='block';
+  var d=document.getElementById('apiDesc');
+  if(d)d.style.display='block';
   document.getElementById('apiKeyInput').value=getKey();
 }
 
