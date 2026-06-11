@@ -5,6 +5,14 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no"/>
 <title>Kids Food Scanner</title>
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@400;600;700&display=swap" rel="stylesheet"/>
+<!-- PWA -->
+<meta name="apple-mobile-web-app-capable" content="yes"/>
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
+<meta name="apple-mobile-web-app-title" content="Food Scanner"/>
+<meta name="mobile-web-app-capable" content="yes"/>
+<meta name="theme-color" content="#0f1117"/>
+<link rel="manifest" href="manifest.json"/>
+<link rel="apple-touch-icon" href="icon.png"/>
 <style>
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
 body{background:#0f1117;font-family:'DM Sans',sans-serif;min-height:100vh;padding-bottom:72px}
@@ -1018,7 +1026,20 @@ function showErr(msg){var b=document.getElementById('errBox');b.className='visib
 function toggleRaw(){var b=document.getElementById('rawBox'),btn=document.getElementById('rawToggle');var v=b.style.display==='block';b.style.display=v?'none':'block';btn.textContent=v?'▼ Show raw reading':'▲ Hide raw reading';}
 function resetSoft(){_b64=null;_raw='';_curResult=null;_curServings=1;document.getElementById('results').className='';document.getElementById('errBox').className='';document.getElementById('statusBar').className='';document.getElementById('ateConfirmed').style.display='none';document.getElementById('skipLogged').style.display='none';var btn=document.getElementById('btnAnalyze');btn.className='busy';btn.disabled=true;btn.textContent='⏳ PREPARING...';btn.style.display='';}
 function resetAll(){resetSoft();var dz=document.getElementById('dropZone');dz.classList.remove('hasImg');dz.innerHTML='<div class="ico">📷</div><div class="lbl">Tap to snap or upload</div><div class="sub">Photo of a nutrition label</div>';document.getElementById('fileIn').value='';document.getElementById('statusBar').className='';document.getElementById('btnAnalyze').style.display='none';}
+// Register service worker for PWA
+if('serviceWorker' in navigator){
+  navigator.serviceWorker.register('./sw.js').catch(function(){});
+}
+
 loadKey();
+
+// Remind user to re-enter API key if missing
+if(!localStorage.getItem('kfs_apikey')){
+  setTimeout(function(){
+    var el=document.getElementById('apiSetup');
+    if(el){el.style.border='1.5px solid #6ee7f7';el.style.boxShadow='0 0 12px #6ee7f733';}
+  },500);
+}
 </script>
 </body>
 </html>
