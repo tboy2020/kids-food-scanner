@@ -31,14 +31,14 @@ body{background:#0f1117;font-family:'DM Sans',sans-serif;min-height:100vh;paddin
 .card{background:#1a1d27;border-radius:13px;padding:13px 15px;margin-bottom:11px;border:1px solid #2a2d3a}
 .card-title{font-family:'Bebas Neue',cursive;font-size:15px;letter-spacing:2px;color:#f0f4ff;margin-bottom:11px}
 /* API */
-#apiSetup{background:#1a1d27;border:1px solid #2a3a5a;border-radius:13px;padding:14px;margin-bottom:11px}
+#apiSetup{background:#1a1d27;border:1px solid #2a3a5a;border-radius:13px;padding:14px;margin-bottom:11px;position:relative;z-index:10}
 #apiSetup.hidden{display:none}
 .setup-title{color:#6ee7f7;font-family:'Bebas Neue',cursive;font-size:14px;letter-spacing:2px;margin-bottom:4px}
 .setup-desc{color:#8b92a8;font-size:11px;margin-bottom:9px;line-height:1.4}
 .setup-desc a{color:#6ee7f7}
-.key-row{display:flex;gap:7px}
-#apiKeyInput{flex:1;background:#0f1117;border:1px solid #2a2d3a;border-radius:7px;padding:8px 10px;color:#f0f4ff;font-size:12px;font-family:'DM Sans',sans-serif;outline:none}
-#btnSaveKey{background:linear-gradient(135deg,#6ee7f7,#3b82f6);border:none;border-radius:7px;padding:8px 12px;color:#0f1117;font-family:'Bebas Neue',cursive;font-size:13px;cursor:pointer}
+.key-row{display:flex;gap:7px;position:relative;z-index:5}
+#apiKeyInput{flex:1;background:#0f1117;border:1px solid #2a2d3a;border-radius:7px;padding:10px 12px;color:#f0f4ff;font-size:14px;font-family:'DM Sans',sans-serif;outline:none;-webkit-appearance:none;appearance:none;min-height:44px}
+#btnSaveKey{background:linear-gradient(135deg,#6ee7f7,#3b82f6);border:none;border-radius:7px;padding:12px 18px;color:#0f1117;font-family:'Bebas Neue',cursive;font-size:14px;cursor:pointer;-webkit-appearance:none;appearance:none;touch-action:manipulation;min-width:70px;min-height:44px;position:relative;z-index:10}
 .key-saved{color:#22c55e;font-size:10px;margin-top:4px;display:none}
 .key-change{color:#8b92a8;font-size:10px;margin-top:4px;cursor:pointer;text-decoration:underline;display:none}
 /* Upload */
