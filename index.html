@@ -218,28 +218,16 @@ body{background:#0f1117;font-family:'DM Sans',sans-serif;min-height:100vh;paddin
 
 <!-- ══ SCANNER ══ -->
 <div class="screen active" id="screenScanner">
-  <div id="apiSetup">
+  <div id="apiSetup" style="position:relative;z-index:99">
     <div class="setup-title">🔑 API KEY REQUIRED</div>
-    <div class="setup-desc" id="apiDesc">
-      Paste your Anthropic API key below.<br/>
+    <div id="apiDesc" style="color:#8b92a8;font-size:11px;margin-bottom:10px;line-height:1.5">
+      Paste your key — it saves <strong style="color:#6ee7f7">automatically when you stop typing</strong>.<br/>
       <a href="https://console.anthropic.com" target="_blank" style="color:#6ee7f7">console.anthropic.com</a>
     </div>
-    <textarea
-      id="apiKeyInput"
-      placeholder="Paste sk-ant-api03-... here"
-      rows="2"
-      autocomplete="off"
-      autocorrect="off"
-      autocapitalize="none"
-      spellcheck="false"
-      style="width:100%;background:#0f1117;border:2px solid #6ee7f755;border-radius:8px;padding:14px;color:#f0f4ff;font-size:12px;font-family:monospace;outline:none;-webkit-appearance:none;display:block;box-sizing:border-box;margin-top:10px;margin-bottom:10px;resize:none;line-height:1.4"
-    ></textarea>
-    <div id="keySaved" style="display:none;background:#16271e;border:1px solid #22c55e44;border-radius:10px;color:#22c55e;font-size:13px;text-align:center;padding:12px;margin-bottom:8px;font-weight:700">✅ Key saved! Ready to scan labels.</div>
-    <div id="keyDebug" style="color:#8b92a8;font-size:10px;text-align:center;margin-bottom:8px;font-family:monospace;min-height:14px"></div>
-    <div style="display:flex;gap:8px">
-      <div id="btnSave" style="flex:2;padding:16px;border-radius:10px;background:linear-gradient(135deg,#6ee7f7,#3b82f6);color:#0f1117;font-family:'Bebas Neue',cursive;font-size:18px;letter-spacing:2px;text-align:center;cursor:pointer" ontouchstart="this.style.opacity=0.7" ontouchend="this.style.opacity=1;doSave();event.preventDefault()" onmouseup="doSave()">SAVE ✓</div>
-      <div id="keyChange" style="display:none;flex:1;padding:16px;border-radius:10px;border:1px solid #2a2d3a;color:#8b92a8;font-family:'Bebas Neue',cursive;font-size:14px;letter-spacing:1px;text-align:center;cursor:pointer" ontouchstart="this.style.opacity=0.7" ontouchend="this.style.opacity=1;doChange();event.preventDefault()" onmouseup="doChange()">CHANGE</div>
-    </div>
+    <textarea id="apiKeyInput" rows="3" placeholder="sk-ant-api03-..." autocomplete="off" autocorrect="off" autocapitalize="none" spellcheck="false" oninput="onKeyInput(this.value)" style="width:100%;background:#0f1117;border:2px solid #6ee7f755;border-radius:8px;padding:12px;color:#f0f4ff;font-size:12px;font-family:monospace;outline:none;-webkit-appearance:none;display:block;box-sizing:border-box;resize:none;line-height:1.4"></textarea>
+    <div id="keyStatus" style="font-size:12px;text-align:center;padding:8px 0;min-height:20px;color:#8b92a8">Paste your full API key above</div>
+    <div id="keySaved" style="display:none;background:#16271e;border:1px solid #22c55e55;border-radius:10px;color:#22c55e;font-size:13px;text-align:center;padding:12px;font-weight:700">✅ Key saved! Tap the camera below to start scanning.</div>
+    <div id="keyChange" style="display:none;color:#8b92a8;font-size:11px;text-align:center;padding:6px 0;cursor:pointer;text-decoration:underline" onclick="doChange()">Change API key</div>
   </div>
   <div id="dropZone" onclick="document.getElementById('fileIn').click()">
     <div class="ico">📷</div><div class="lbl">Tap to snap or upload</div><div class="sub">Photo of a nutrition label</div>
@@ -501,91 +489,78 @@ function setPeriod(p){
 /* ══ API KEY ══ */
 function loadKey(){
   var k=getKey();
-  if(k&&k.length>20){
-    document.getElementById('apiKeyInput').style.display='none';
-    document.getElementById('keySaved').style.display='block';
-    document.getElementById('keyChange').style.display='block';
-    document.getElementById('apiDesc').style.display='none';
-    document.getElementById('btnSave').style.display='none';
+  if(k&&k.length>10){
+    showKeySaved();
   }
 }
 
-function onKeyInput(val){
-  var pct=Math.min(val.length/108*100,100);
-  document.getElementById('keyProgressBar').style.width=pct+'%';
-  var color=pct<50?'#f59e0b':pct<90?'#6ee7f7':'#22c55e';
-  document.getElementById('keyProgressBar').style.background=color;
-  if(val.startsWith('sk-')&&val.length>20){
-    document.getElementById('keyHint').style.color='#22c55e';
-    document.getElementById('keyHint').textContent='✅ Looks good! Tap anywhere outside to save.';
-    document.getElementById('apiKeyInput').style.borderColor='#22c55e';
-  } else if(val.length>5){
-    document.getElementById('keyHint').style.color='#f59e0b';
-    document.getElementById('keyHint').textContent='Key should start with sk-ant-api03-...';
-    document.getElementById('apiKeyInput').style.borderColor='#f59e0b';
-  } else {
-    document.getElementById('keyHint').style.color='#8b92a8';
-    document.getElementById('keyHint').textContent='Paste your full API key above';
-    document.getElementById('apiKeyInput').style.borderColor='#2a2d3a';
-  }
-}
-
-function tryAutoSave(val){
-  val=val.trim();
-  if(!val||!val.startsWith('sk-')||val.length<30)return;
-  localStorage.setItem('kfs_apikey',val);
-  document.getElementById('apiKeyInput').style.display='none';
+function showKeySaved(){
+  var inp=document.getElementById('apiKeyInput');
+  if(inp)inp.style.display='none';
+  var desc=document.getElementById('apiDesc');
+  if(desc)desc.style.display='none';
+  var st=document.getElementById('keyStatus');
+  if(st)st.style.display='none';
   document.getElementById('keySaved').style.display='block';
   document.getElementById('keyChange').style.display='block';
-  document.getElementById('keyHint').style.display='none';
-  document.getElementById('keyProgress').style.display='none';
-  document.getElementById('apiDesc').style.display='none';
-  status('✅ API key saved! Ready to scan.');
 }
-function doSave(){
-  var k=document.getElementById('apiKeyInput').value.trim();
-  var dbg=document.getElementById('keyDebug');
-  dbg.textContent='Saving... length: '+k.length;
-  if(!k||k.length<10){
-    dbg.style.color='#ef4444';
-    dbg.textContent='❌ Key too short ('+k.length+' chars). Paste full key.';
+
+function trySaveKey(){
+  var inp=document.getElementById('apiKeyInput');
+  if(!inp)return;
+  var k=inp.value.trim();
+  var st=document.getElementById('keyStatus');
+  if(k.length<10){
+    if(st){st.style.color='#8b92a8';st.textContent='Paste your full API key above';}
     return;
   }
-  // Try multiple storage methods
-  var saved=false;
+  if(st){st.style.color='#22c55e';st.textContent='Saving...';}
   try{
     localStorage.setItem('kfs_apikey',k);
-    var test=localStorage.getItem('kfs_apikey');
-    if(test===k){saved=true;dbg.textContent='✅ Saved to localStorage';}
-    else{dbg.textContent='⚠️ localStorage mismatch';}
-  }catch(e){
-    dbg.style.color='#f59e0b';
-    dbg.textContent='⚠️ localStorage blocked: '+e.message+'. Using session only.';
-    // Fall back to session variable
     window._apiKeyFallback=k;
-    saved=true;
-  }
-  if(saved){
-    document.getElementById('apiKeyInput').style.display='none';
-    document.getElementById('keySaved').style.display='block';
-    document.getElementById('keyChange').style.display='block';
-    document.getElementById('apiDesc').style.display='none';
-    document.getElementById('btnSave').style.display='none';
-    setTimeout(function(){dbg.textContent='';},3000);
+    if(st){st.style.color='#22c55e';st.textContent='✅ Saved!';}
+    setTimeout(showKeySaved,800);
+  }catch(e){
+    window._apiKeyFallback=k;
+    if(st){st.style.color='#f59e0b';st.textContent='⚠️ Using session only (storage blocked)';}
+    setTimeout(showKeySaved,800);
   }
 }
-function formSaveKey(){doSave();}
-function saveKey(){doSave();}
+
+// Save on every keystroke after debounce
+var _saveTimer=null;
+function onKeyInput(val){
+  var st=document.getElementById('keyStatus');
+  if(val.length<5){
+    if(st){st.style.color='#8b92a8';st.textContent='Paste your full API key above';}
+    return;
+  }
+  if(val.startsWith('sk-')){
+    if(st){st.style.color='#6ee7f7';st.textContent='✅ Key detected — saving in 1 second...';}
+  } else {
+    if(st){st.style.color='#f59e0b';st.textContent='Key should start with sk-ant-api03-...';}
+  }
+  clearTimeout(_saveTimer);
+  _saveTimer=setTimeout(function(){trySaveKey();},1000);
+}
+
+function doSave(){trySaveKey();}
+function formSaveKey(){trySaveKey();}
+function saveKey(){trySaveKey();}
+
 function doChange(){
-  document.getElementById('apiKeyInput').style.display='block';
-  document.getElementById('apiKeyInput').value=getKey();
+  window._apiKeyFallback=null;
+  try{localStorage.removeItem('kfs_apikey');}catch(e){}
+  var inp=document.getElementById('apiKeyInput');
+  if(inp){inp.value='';inp.style.display='block';}
+  var desc=document.getElementById('apiDesc');
+  if(desc)desc.style.display='block';
+  var st=document.getElementById('keyStatus');
+  if(st){st.style.display='block';st.style.color='#8b92a8';st.textContent='Paste your new API key above';}
   document.getElementById('keySaved').style.display='none';
   document.getElementById('keyChange').style.display='none';
-  document.getElementById('apiDesc').style.display='block';
-  document.getElementById('btnSave').style.display='block';
-  document.getElementById('keyDebug').textContent='';
-  document.getElementById('apiKeyInput').focus();
 }
+function changeKey(){doChange();}
 function changeKey(){doChange();}
 
 /* ══ IMAGE ══ */
