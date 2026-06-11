@@ -220,13 +220,21 @@ body{background:#0f1117;font-family:'DM Sans',sans-serif;min-height:100vh;paddin
 <div class="screen active" id="screenScanner">
   <div id="apiSetup">
     <div class="setup-title">🔑 API KEY REQUIRED</div>
-    <div class="setup-desc">Paste your key below then tap SAVE.<br/><a href="https://console.anthropic.com" target="_blank">console.anthropic.com</a></div>
-    <input type="text" id="apiKeyInput" placeholder="sk-ant-api03-..." autocomplete="off" autocorrect="off" autocapitalize="none" spellcheck="false" style="width:100%;background:#0f1117;border:1px solid #2a2d3a;border-radius:8px;padding:14px;color:#f0f4ff;font-size:13px;font-family:monospace;outline:none;-webkit-appearance:none;margin-bottom:10px;display:block;box-sizing:border-box"/>
-    <button id="btnSaveKey" type="button" style="width:100%;padding:18px;border-radius:10px;background:linear-gradient(135deg,#6ee7f7,#3b82f6);color:#0f1117;font-family:'Bebas Neue',cursive;font-size:20px;letter-spacing:3px;text-align:center;cursor:pointer;border:none;display:block;margin-bottom:6px;-webkit-appearance:none;appearance:none;touch-action:manipulation;outline:none;" ontouchend="saveKey();return false;" onclick="saveKey();return false;">
-      SAVE API KEY ✓
-    </button>
-    <div class="key-saved" id="keySaved" style="display:none;color:#22c55e;font-size:11px;text-align:center;padding:4px 0">✅ Key saved! Ready to scan.</div>
-    <div class="key-change" id="keyChange" onclick="changeKey()" style="display:none;color:#8b92a8;font-size:11px;text-align:center;padding:4px 0;cursor:pointer;text-decoration:underline">Change API key</div>
+    <div class="setup-desc" id="apiDesc">Paste your key below — <strong style="color:#6ee7f7">saves automatically</strong>.<br/><a href="https://console.anthropic.com" target="_blank">console.anthropic.com</a></div>
+    <input type="text" id="apiKeyInput"
+      placeholder="sk-ant-api03-..."
+      autocomplete="off" autocorrect="off" autocapitalize="none" spellcheck="false"
+      style="width:100%;background:#0f1117;border:2px solid #2a2d3a;border-radius:8px;padding:14px;color:#f0f4ff;font-size:13px;font-family:monospace;outline:none;-webkit-appearance:none;margin-top:10px;display:block;box-sizing:border-box"
+      onchange="tryAutoSave(this.value)"
+      onblur="tryAutoSave(this.value)"
+      oninput="onKeyInput(this.value)"
+    />
+    <div id="keyProgress" style="height:4px;border-radius:99px;background:#2a2d3a;margin-top:8px;overflow:hidden">
+      <div id="keyProgressBar" style="height:100%;width:0%;background:#6ee7f7;border-radius:99px;transition:width .3s"></div>
+    </div>
+    <div id="keyHint" style="color:#8b92a8;font-size:11px;margin-top:6px;text-align:center">Paste your full API key above</div>
+    <div class="key-saved" id="keySaved" style="display:none;color:#22c55e;font-size:12px;text-align:center;padding:8px 0;font-weight:700">✅ Key saved! Tap "Tap to snap or upload" to start.</div>
+    <div id="keyChange" style="display:none;color:#8b92a8;font-size:11px;text-align:center;padding:4px 0;cursor:pointer;text-decoration:underline" ontouchend="changeKey()" onclick="changeKey()">Change API key</div>
   </div>
   <div id="dropZone" onclick="document.getElementById('fileIn').click()">
     <div class="ico">📷</div><div class="lbl">Tap to snap or upload</div><div class="sub">Photo of a nutrition label</div>
@@ -489,29 +497,57 @@ function setPeriod(p){
 function loadKey(){
   var k=getKey();
   if(k){
-    document.getElementById('apiKeyInput').value=k;
     document.getElementById('apiKeyInput').style.display='none';
-    document.getElementById('btnSaveKey').style.display='none';
     document.getElementById('keySaved').style.display='block';
     document.getElementById('keyChange').style.display='block';
+    document.getElementById('keyHint').style.display='none';
+    document.getElementById('keyProgress').style.display='none';
   }
+}
+
+function onKeyInput(val){
+  var pct=Math.min(val.length/108*100,100);
+  document.getElementById('keyProgressBar').style.width=pct+'%';
+  var color=pct<50?'#f59e0b':pct<90?'#6ee7f7':'#22c55e';
+  document.getElementById('keyProgressBar').style.background=color;
+  if(val.startsWith('sk-')&&val.length>20){
+    document.getElementById('keyHint').style.color='#22c55e';
+    document.getElementById('keyHint').textContent='✅ Looks good! Tap anywhere outside to save.';
+    document.getElementById('apiKeyInput').style.borderColor='#22c55e';
+  } else if(val.length>5){
+    document.getElementById('keyHint').style.color='#f59e0b';
+    document.getElementById('keyHint').textContent='Key should start with sk-ant-api03-...';
+    document.getElementById('apiKeyInput').style.borderColor='#f59e0b';
+  } else {
+    document.getElementById('keyHint').style.color='#8b92a8';
+    document.getElementById('keyHint').textContent='Paste your full API key above';
+    document.getElementById('apiKeyInput').style.borderColor='#2a2d3a';
+  }
+}
+
+function tryAutoSave(val){
+  val=val.trim();
+  if(!val||!val.startsWith('sk-')||val.length<30)return;
+  localStorage.setItem('kfs_apikey',val);
+  document.getElementById('apiKeyInput').style.display='none';
+  document.getElementById('keySaved').style.display='block';
+  document.getElementById('keyChange').style.display='block';
+  document.getElementById('keyHint').style.display='none';
+  document.getElementById('keyProgress').style.display='none';
+  document.getElementById('apiDesc').style.display='none';
+  status('✅ API key saved! Ready to scan.');
 }
 function saveKey(){
   var k=document.getElementById('apiKeyInput').value.trim();
-  if(!k){alert('Please paste your API key first');return;}
-  if(!k.startsWith('sk-')){alert('Key should start with sk-\nYou entered: '+k.slice(0,10)+'...');return;}
-  localStorage.setItem('kfs_apikey',k);
-  document.getElementById('apiKeyInput').style.display='none';
-  document.getElementById('btnSaveKey').style.display='none';
-  document.getElementById('keySaved').style.display='block';
-  document.getElementById('keyChange').style.display='block';
-  status('✅ API key saved! Ready to scan.');
+  tryAutoSave(k);
 }
 function changeKey(){
   document.getElementById('apiKeyInput').style.display='block';
-  document.getElementById('btnSaveKey').style.display='block';
   document.getElementById('keySaved').style.display='none';
   document.getElementById('keyChange').style.display='none';
+  document.getElementById('keyHint').style.display='block';
+  document.getElementById('keyProgress').style.display='block';
+  document.getElementById('apiDesc').style.display='block';
   document.getElementById('apiKeyInput').value=getKey();
 }
 
