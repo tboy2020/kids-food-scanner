@@ -545,10 +545,10 @@ function tryAutoSave(val){
 function doSave(){
   var k=document.getElementById('apiKeyInput').value.trim();
   var dbg=document.getElementById('keyDebug');
-  dbg.textContent='Attempting save... key length: '+k.length;
-  if(!k||k.length<20){
+  dbg.textContent='Saving... length: '+k.length;
+  if(!k||k.length<10){
     dbg.style.color='#ef4444';
-    dbg.textContent='❌ Key too short. Paste the full key.';
+    dbg.textContent='❌ Key too short ('+k.length+' chars). Paste full key.';
     return;
   }
   // Try multiple storage methods
