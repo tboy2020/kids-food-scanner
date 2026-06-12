@@ -1,18 +1,10 @@
-<!DOCTYPE html><!-- v20260612_130942 -->
+<!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no"/>
 <title>Kids Food Scanner</title>
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@400;600;700&display=swap" rel="stylesheet"/>
-<!-- PWA -->
-<meta name="apple-mobile-web-app-capable" content="yes"/>
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
-<meta name="apple-mobile-web-app-title" content="Food Scanner"/>
-<meta name="mobile-web-app-capable" content="yes"/>
-<meta name="theme-color" content="#0f1117"/>
-<link rel="manifest" href="manifest.json"/>
-<link rel="apple-touch-icon" href="icon.png"/>
 <style>
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
 body{background:#0f1117;font-family:'DM Sans',sans-serif;min-height:100vh;padding-bottom:72px}
@@ -31,14 +23,14 @@ body{background:#0f1117;font-family:'DM Sans',sans-serif;min-height:100vh;paddin
 .card{background:#1a1d27;border-radius:13px;padding:13px 15px;margin-bottom:11px;border:1px solid #2a2d3a}
 .card-title{font-family:'Bebas Neue',cursive;font-size:15px;letter-spacing:2px;color:#f0f4ff;margin-bottom:11px}
 /* API */
-#apiSetup{background:#1a1d27;border:1px solid #2a3a5a;border-radius:13px;padding:14px;margin-bottom:11px;position:relative;z-index:10}
+#apiSetup{background:#1a1d27;border:1px solid #2a3a5a;border-radius:13px;padding:14px;margin-bottom:11px}
 #apiSetup.hidden{display:none}
 .setup-title{color:#6ee7f7;font-family:'Bebas Neue',cursive;font-size:14px;letter-spacing:2px;margin-bottom:4px}
 .setup-desc{color:#8b92a8;font-size:11px;margin-bottom:9px;line-height:1.4}
 .setup-desc a{color:#6ee7f7}
-.key-row{display:flex;gap:7px;position:relative;z-index:5}
-#apiKeyInput{flex:1;background:#0f1117;border:1px solid #2a2d3a;border-radius:7px;padding:10px 12px;color:#f0f4ff;font-size:14px;font-family:'DM Sans',sans-serif;outline:none;-webkit-appearance:none;appearance:none;min-height:44px}
-#btnSaveKey{background:linear-gradient(135deg,#6ee7f7,#3b82f6);border:none;border-radius:7px;padding:12px 18px;color:#0f1117;font-family:'Bebas Neue',cursive;font-size:14px;cursor:pointer;-webkit-appearance:none;appearance:none;touch-action:manipulation;min-width:70px;min-height:44px;position:relative;z-index:10}
+.key-row{display:flex;gap:7px}
+#apiKeyInput{flex:1;background:#0f1117;border:1px solid #2a2d3a;border-radius:7px;padding:8px 10px;color:#f0f4ff;font-size:12px;font-family:'DM Sans',sans-serif;outline:none}
+#btnSaveKey{background:linear-gradient(135deg,#6ee7f7,#3b82f6);border:none;border-radius:7px;padding:8px 12px;color:#0f1117;font-family:'Bebas Neue',cursive;font-size:13px;cursor:pointer}
 .key-saved{color:#22c55e;font-size:10px;margin-top:4px;display:none}
 .key-change{color:#8b92a8;font-size:10px;margin-top:4px;cursor:pointer;text-decoration:underline;display:none}
 /* Upload */
@@ -222,10 +214,10 @@ body{background:#0f1117;font-family:'DM Sans',sans-serif;min-height:100vh;paddin
     <div class="setup-title">🔑 API KEY REQUIRED</div>
     <div style="color:#8b92a8;font-size:11px;margin-bottom:10px">Enter your Anthropic API key.<br/><a href="https://console.anthropic.com" target="_blank" style="color:#6ee7f7">console.anthropic.com</a></div>
     <input id="apiKeyInput" type="text" placeholder="sk-ant-api03-..." autocapitalize="none" autocorrect="off" autocomplete="off" spellcheck="false" style="width:100%;padding:12px;background:#0f1117;border:2px solid #6ee7f7;border-radius:8px;color:#f0f4ff;font-size:12px;font-family:monospace;box-sizing:border-box;display:block;margin-bottom:10px"/>
-    <div id="btnSave" style="width:100%;padding:18px;background:linear-gradient(135deg,#6ee7f7,#3b82f6);color:#0f1117;font-size:20px;font-family:'Bebas Neue',cursive;letter-spacing:3px;border-radius:10px;text-align:center;box-sizing:border-box;cursor:pointer;-webkit-tap-highlight-color:#6ee7f7;user-select:none;-webkit-user-select:none" id="btnSave" ontouchstart="this.style.opacity='0.7'" ontouchend="this.style.opacity='1';window._tapped=true;doSave()" onmousedown="window._tapped=true" onmouseup="if(window._tapped){window._tapped=false;doSave()}">SAVE API KEY ✓</div>
+    <div id="btnSave" ontouchstart="this.style.opacity='0.6'" ontouchend="this.style.opacity='1';doSave()" onmouseup="doSave()" style="width:100%;padding:18px;background:linear-gradient(135deg,#6ee7f7,#3b82f6);color:#0f1117;font-size:20px;font-family:'Bebas Neue',cursive;letter-spacing:3px;border-radius:10px;text-align:center;box-sizing:border-box;cursor:pointer;user-select:none;-webkit-user-select:none">SAVE API KEY ✓</div>
     <div id="keyStatus" style="color:#8b92a8;font-size:12px;text-align:center;padding:8px 0;min-height:20px"></div>
     <div id="keySaved" style="display:none;background:#16271e;border:1px solid #22c55e55;border-radius:10px;color:#22c55e;font-size:13px;text-align:center;padding:12px;font-weight:700;margin-top:8px">✅ Key saved! Tap the camera to start scanning.</div>
-    <div id="keyChange" style="display:none;color:#8b92a8;font-size:11px;text-align:center;padding:6px 0;cursor:pointer;text-decoration:underline;margin-top:4px" ontouchend="doChange()" onclick="doChange()">Change API key</div>
+    <div id="keyChange" style="display:none;color:#8b92a8;font-size:11px;text-align:center;padding:6px 0;cursor:pointer;text-decoration:underline;margin-top:4px" ontouchend="doChange()" onmouseup="doChange()">Change API key</div>
   </div>
   <div id="dropZone" onclick="document.getElementById('fileIn').click()">
     <div class="ico">📷</div><div class="lbl">Tap to snap or upload</div><div class="sub">Photo of a nutrition label</div>
@@ -458,7 +450,7 @@ var _b64=null,_raw='',_curResult=null,_curServings=1,_curPeriod='today';
 /* ══ STORAGE ══ */
 function getPrefs(){return JSON.parse(localStorage.getItem('kfs_prefs')||'{"autoReset":true,"showVariance":true,"scanSugar":true,"flagAdditives":true}');}
 function savePrefs(p){localStorage.setItem('kfs_prefs',JSON.stringify(p));}
-function getKey(){try{return localStorage.getItem('kfs_apikey')||window._apiKeyFallback||'';}catch(e){return window._apiKeyFallback||'';}}
+function getKey(){return localStorage.getItem('kfs_apikey')||'';}
 function getActiveProfiles(){return JSON.parse(localStorage.getItem('kfs_profiles')||'["young","adult"]');}
 function saveActiveProfiles(a){localStorage.setItem('kfs_profiles',JSON.stringify(a));}
 function dateKey(d){d=d||new Date();return d.toISOString().slice(0,10);}
@@ -485,38 +477,6 @@ function setPeriod(p){
 }
 
 /* ══ API KEY ══ */
-function doSave(){
-  var inp = document.getElementById('apiKeyInput');
-  var st = document.getElementById('keyStatus');
-  if(!inp){ if(st) st.textContent='ERROR: input not found'; return; }
-  var k = inp.value.trim();
-  if(st) st.textContent = 'Got key: '+k.length+' chars';
-  if(k.length < 10){
-    if(st){ st.style.color='#ef4444'; st.textContent='Key too short ('+k.length+'). Paste full key.'; }
-    return;
-  }
-  // Store it
-  window._apiKeyFallback = k;
-  try{ localStorage.setItem('kfs_apikey', k); }catch(e){ if(st) st.textContent+=' (localStorage blocked)'; }
-  // Show saved state
-  inp.style.display = 'none';
-  document.getElementById('btnSave').style.display = 'none';
-  document.getElementById('keySaved').style.display = 'block';
-  document.getElementById('keyChange').style.display = 'block';
-  if(st) st.textContent = '';
-}
-
-function doChange(){
-  window._apiKeyFallback = null;
-  try { localStorage.removeItem('kfs_apikey'); } catch(e) {}
-  document.getElementById('apiKeyInput').style.display = 'block';
-  document.getElementById('apiKeyInput').value = '';
-  document.getElementById('btnSave').style.display = 'block';
-  document.getElementById('keySaved').style.display = 'none';
-  document.getElementById('keyChange').style.display = 'none';
-  document.getElementById('keyStatus').textContent = '';
-}
-
 function loadKey(){
   var k='';
   try{k=localStorage.getItem('kfs_apikey')||'';}catch(e){}
@@ -528,48 +488,568 @@ function loadKey(){
     document.getElementById('keyChange').style.display='block';
   }
 }
-
-function getKey(){
-  var k='';
-  try{k=localStorage.getItem('kfs_apikey')||'';}catch(e){}
-  return k||window._apiKeyFallback||'';
-}
-
 function doSave(){
   var inp=document.getElementById('apiKeyInput');
   var st=document.getElementById('keyStatus');
-  if(!inp){alert('ERROR: input not found');return;}
-  var k=inp.value.trim();
-  if(st)st.textContent='Length: '+k.length;
+  var k=inp?inp.value.trim():'';
   if(k.length<10){
     if(st){st.style.color='#ef4444';st.textContent='Too short. Paste full key.';}
     return;
   }
   window._apiKeyFallback=k;
   try{localStorage.setItem('kfs_apikey',k);}catch(e){}
-  inp.style.display='none';
+  if(inp)inp.style.display='none';
   document.getElementById('btnSave').style.display='none';
   document.getElementById('keySaved').style.display='block';
   document.getElementById('keyChange').style.display='block';
   if(st)st.textContent='';
 }
-
 function doChange(){
   window._apiKeyFallback=null;
   try{localStorage.removeItem('kfs_apikey');}catch(e){}
-  document.getElementById('apiKeyInput').style.display='block';
-  document.getElementById('apiKeyInput').value='';
+  var inp=document.getElementById('apiKeyInput');
+  if(inp){inp.style.display='block';inp.value='';}
   document.getElementById('btnSave').style.display='block';
   document.getElementById('keySaved').style.display='none';
   document.getElementById('keyChange').style.display='none';
-  if(document.getElementById('keyStatus'))document.getElementById('keyStatus').textContent='';
+}
+function saveKey(){var k=document.getElementById('apiKeyInput').value.trim();if(!k||!k.startsWith('sk-')){alert('Please enter a valid key');return;}localStorage.setItem('kfs_apikey',k);document.getElementById('keySaved').style.display='block';document.getElementById('keyChange').style.display='block';document.getElementById('btnSaveKey').style.display='none';document.getElementById('apiKeyInput').style.display='none';}
+function changeKey(){document.getElementById('apiKeyInput').style.display='block';document.getElementById('btnSaveKey').style.display='block';document.getElementById('keySaved').style.display='none';document.getElementById('keyChange').style.display='none';document.getElementById('apiKeyInput').value=getKey();}
+
+/* ══ IMAGE ══ */
+function onFile(inp){
+  var file=inp.files[0];if(!file)return;
+  resetSoft();status('Reading image...');
+  var fr=new FileReader();
+  fr.onload=function(e){
+    var url=e.target.result;
+    var dz=document.getElementById('dropZone');dz.classList.add('hasImg');dz.innerHTML='<img src="'+url+'" alt="label"/>';
+    status('Compressing...');
+    compressToBase64(url,900,0.65,function(b64){
+      _b64=b64;var kb=Math.round(b64.length*0.75/1024);
+      status('✅ Ready — '+kb+'KB. Tap Analyze!');
+      var btn=document.getElementById('btnAnalyze');btn.className='ready';btn.disabled=false;btn.textContent='ANALYZE FOR KIDS 🔍';
+    });
+  };
+  fr.readAsDataURL(file);
+}
+function compressToBase64(dataUrl,maxW,quality,cb){
+  var img=new Image();
+  img.onload=function(){var w=img.width,h=img.height;if(w>maxW){h=Math.round(h*maxW/w);w=maxW;}var c=document.createElement('canvas');c.width=w;c.height=h;c.getContext('2d').drawImage(img,0,0,w,h);cb(c.toDataURL('image/jpeg',quality).split(',')[1]);};
+  img.src=dataUrl;
 }
 
-function saveKey(){doSave();}
-function changeKey(){doChange();}
-function formSaveKey(){doSave();}
-function tryAutoSave(v){if(v&&v.length>10)window._apiKeyFallback=v;}
-function onKeyInput(v){tryAutoSave(v);}
+/* ══ ANALYZE ══ */
+async function analyze(){
+  if(!_b64)return;
+  var apiKey=getKey();if(!apiKey){alert('Please save your API key first.');return;}
+  var btn=document.getElementById('btnAnalyze');
+  btn.className='busy';btn.disabled=true;btn.innerHTML='<span class="spinning">⚙️</span> READING LABEL...';
+  document.getElementById('errBox').className='';status('Calling Claude AI...');
+  try{
+    var resp=await fetch('https://api.anthropic.com/v1/messages',{
+      method:'POST',
+      headers:{'Content-Type':'application/json','x-api-key':apiKey,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},
+      body:JSON.stringify({model:'claude-haiku-4-5',max_tokens:600,messages:[{role:'user',content:[
+        {type:'image',source:{type:'base64',media_type:'image/jpeg',data:_b64}},
+        {type:'text',text:'Read this nutrition label carefully. Output ONLY these lines:\nProduct name: \nServing size: \nCalories: \nTotal Fat: \nSaturated Fat: \nSodium: \nTotal Carbohydrate: \nTotal Sugars: \nAdded Sugars: \nProtein: \nIngredients list: \nUse 0 for anything not visible. Include full ingredients on last line.'}
+      ]}]})
+    });
+    status('HTTP '+resp.status+'...');
+    var bodyText=await resp.text();
+    if(!resp.ok)throw new Error('HTTP '+resp.status+': '+bodyText.slice(0,200));
+    var json=JSON.parse(bodyText);
+    var text='';
+    if(json.content&&Array.isArray(json.content)){for(var i=0;i<json.content.length;i++){if(json.content[i].type==='text'){text=json.content[i].text;break;}}}
+    if(!text)throw new Error('No text in response');
+    status('✅ Building dashboard...');
+    _raw=text;
+    _curResult=buildResult(text);
+    // Set smart default servings
+    _curServings=getDefaultServings(_curResult.prod);
+    logScan(_curResult,'scanned');
+    render(_curResult,_curServings);
+  }catch(e){
+    status('❌ '+e.message);showErr(e.message);
+    btn.className='ready';btn.disabled=false;btn.textContent='RETRY 🔍';
+  }
+}
+
+/* ══ PARSE ══ */
+function num(t,pats){for(var i=0;i<pats.length;i++){var m=t.match(pats[i]);if(m)return parseFloat(m[1]);}return 0;}
+function str(t,pats,fb){for(var i=0;i<pats.length;i++){var m=t.match(pats[i]);if(m)return m[1].trim();}return fb||'';}
+
+function buildResult(t){
+  var sugar =num(t,[/added sugars?\s*[:\-]?\s*(\d+(?:\.\d+)?)\s*g/i,/added sugars?\s*(\d+)/i]);
+  var sodium=num(t,[/sodium\s*[:\-]?\s*(\d+(?:\.\d+)?)\s*mg/i,/sodium[^0-9]*(\d+)/i]);
+  var prot  =num(t,[/protein\s*[:\-]?\s*(\d+(?:\.\d+)?)\s*g/i,/protein[^0-9]*(\d+)/i]);
+  var cals  =num(t,[/calories\s*[:\-]?\s*(\d+)/i,/calories[^0-9]*(\d+)/i]);
+  var satf  =num(t,[/saturated fat\s*[:\-]?\s*(\d+(?:\.\d+)?)\s*g/i,/saturated fat[^0-9]*(\d+)/i]);
+  var carb  =num(t,[/total carbohydrate\s*[:\-]?\s*(\d+(?:\.\d+)?)\s*g/i,/carbohydrate[^0-9]*(\d+)/i]);
+  var servRaw=str(t,[/serving size\s*[:\-]\s*([^\n]+)/i],'1 serving');
+  var prod  =str(t,[/product(?:\s+name)?\s*[:\-]\s*([^\n]+)/i],'Food Product');
+  var ingr  =str(t,[/ingredients(?:\s+list)?\s*[:\-]\s*([^\n]+(?:\n(?!(?:product|serving|calorie|total|sodium|protein|saturated|added))[^\n]*)*)/i],'');
+  var servG =0;var gm=servRaw.match(/(\d+(?:\.\d+)?)\s*g/i);if(gm)servG=parseFloat(gm[1]);
+
+  // Kids assessment
+  var kidSkip=sugar>KIDS_THRESH.sugAlert||sodium>KIDS_THRESH.sodAlert||(cals>KIDS_THRESH.calAlert&&prot<5);
+  var kidReason='Good nutritional profile for kids.';
+  if(sugar>KIDS_THRESH.sugAlert)kidReason=sugar+'g added sugar = '+Math.round(sugar/25*100)+'% of child\'s daily limit.';
+  else if(sodium>KIDS_THRESH.sodAlert)kidReason=sodium+'mg sodium is high for children.';
+  else if(prot<3&&cals>200)kidReason='Low protein ('+prot+'g) — pair with a protein-rich food.';
+  else if(prot>=8&&sugar<=3)kidReason='Great protein & low sugar — excellent choice!';
+  else if(sodium>KIDS_THRESH.sodWatch)kidReason=sodium+'mg sodium — moderate. Watch other salty foods today.';
+
+  // Adult assessment
+  var adultWatch=sodium>ADULT_THRESH.sodWatch||sugar>ADULT_THRESH.sugWatch||satf>ADULT_THRESH.fatWatch||cals>ADULT_THRESH.calWatch;
+  var adultSkip=sodium>ADULT_THRESH.sodAlert||sugar>ADULT_THRESH.sugAlert||satf>ADULT_THRESH.fatAlert;
+  var adultReason='Well within healthy limits for adults.';
+  if(adultSkip){if(sodium>ADULT_THRESH.sodAlert)adultReason='High sodium ('+sodium+'mg) — limit portions and watch daily intake.';else if(sugar>ADULT_THRESH.sugAlert)adultReason='High sugar ('+sugar+'g) — limit frequency for adults too.';}
+  else if(adultWatch){if(sodium>ADULT_THRESH.sodWatch)adultReason='Moderate sodium — fine occasionally, track daily total.';else if(sugar>ADULT_THRESH.sugWatch)adultReason='Moderate sugar — okay in moderation for adults.';else adultReason='Generally fine for adults. Watch portion size.';}
+
+  // Stat levels for kids display
+  var sl=sugar>KIDS_THRESH.sugAlert?'alert':sugar>KIDS_THRESH.sugWatch?'watch':'good';
+  var nl=sodium>KIDS_THRESH.sodAlert?'alert':sodium>KIDS_THRESH.sodWatch?'watch':'good';
+  var pl=prot>=8?'good':prot>=4?'watch':'alert';
+  var cl=cals>KIDS_THRESH.calAlert?'alert':cals>KIDS_THRESH.calWatch?'watch':'good';
+  var fl=satf>KIDS_THRESH.fatAlert?'alert':satf>KIDS_THRESH.fatWatch?'watch':'good';
+  var bl=carb>KIDS_THRESH.carbAlert?'alert':carb>KIDS_THRESH.carbWatch?'watch':'good';
+
+  // Kid score
+  var score=70;
+  if(sugar>KIDS_THRESH.sugAlert)score-=35;else if(sugar>KIDS_THRESH.sugWatch)score-=15;
+  if(sodium>KIDS_THRESH.sodAlert)score-=25;else if(sodium>KIDS_THRESH.sodWatch)score-=10;
+  if(prot<3)score-=15;else if(prot<5)score-=8;
+  if(satf>KIDS_THRESH.fatAlert)score-=10;if(carb>KIDS_THRESH.carbAlert)score-=5;
+  if(prot>=8)score+=10;if(sugar<=2)score+=10;
+  score=Math.max(5,Math.min(100,score));
+
+  // Revised values (+20%) with FDA zero floor
+  var rSugar  =sugar===0  ?0.4:Math.round(sugar*1.2*10)/10;
+  var rSodium =sodium===0 ?50 :Math.round(sodium*1.2);
+  var rProt   =Math.round(prot*0.8*10)/10;
+  var rCals   =cals===0   ?0  :Math.round(cals*1.2);
+  var rSatf   =satf===0   ?0.4:Math.round(satf*1.2*10)/10;
+  var rCarb   =carb===0   ?0  :Math.round(carb*1.2);
+  var rSugarStr =sugar===0 ?'up to 0.4g ⚠️':rSugar+'g';
+  var rSodiumStr=sodium===0?'up to 50mg ⚠️':rSodium+'mg';
+  var rSatfStr  =satf===0  ?'up to 0.4g ⚠️':rSatf+'g';
+  var rsl=rSugar>KIDS_THRESH.sugAlert?'alert':rSugar>KIDS_THRESH.sugWatch?'watch':'good';
+  var rnl=rSodium>KIDS_THRESH.sodAlert?'alert':rSodium>KIDS_THRESH.sodWatch?'watch':'good';
+  var rpl=rProt>=8?'good':rProt>=4?'watch':'alert';
+  var rcl=rCals>KIDS_THRESH.calAlert?'alert':rCals>KIDS_THRESH.calWatch?'watch':'good';
+  var rfl=rSatf>KIDS_THRESH.fatAlert?'alert':rSatf>KIDS_THRESH.fatWatch?'watch':'good';
+  var rbl=rCarb>KIDS_THRESH.carbAlert?'alert':rCarb>KIDS_THRESH.carbWatch?'watch':'good';
+  if(sugar===0)rsl='watch';if(sodium===0)rnl='watch';if(satf===0)rfl='watch';
+  var rKidSkip=rSugar>KIDS_THRESH.sugAlert||rSodium>KIDS_THRESH.sodAlert||(rCals>KIDS_THRESH.calAlert&&rProt<5);
+  var rAdultSkip=rSodium>ADULT_THRESH.sodAlert||rSugar>ADULT_THRESH.sugAlert||rSatf>ADULT_THRESH.fatAlert;
+
+  return{prod,serv:servRaw,servG,ingr,sugar,sodium,prot,cals,satf,carb,sl,nl,pl,cl,fl,bl,
+    kidSkip,kidReason,adultSkip,adultWatch,adultReason,score,
+    rSugar,rSodium,rProt,rCals,rSatf,rCarb,rSugarStr,rSodiumStr,rSatfStr,
+    rsl,rnl,rpl,rcl,rfl,rbl,rKidSkip,rAdultSkip};
+}
+
+/* ══ SERVING LOGIC ══ */
+function getDefaultServings(prod){
+  var p=prod.toLowerCase();
+  for(var k in SERVING_DEFAULTS){if(p.indexOf(k)!==-1)return SERVING_DEFAULTS[k];}
+  return 1;
+}
+function getServingUnit(prod){
+  var p=prod.toLowerCase();
+  for(var k in SERVING_UNITS){if(p.indexOf(k)!==-1)return SERVING_UNITS[k];}
+  return 'serving';
+}
+function adjustServing(delta){
+  if(!_curResult)return;
+  _curServings=Math.max(1,Math.min(8,_curServings+delta));
+  updateServingDisplay(_curResult,_curServings);
+}
+function updateServingDisplay(r,n){
+  var unit=getServingUnit(r.prod);
+  var plural=n===1?unit:unit+'s';
+  document.getElementById('adjCount').textContent=n;
+  document.getElementById('adjUnit').textContent=plural;
+  document.getElementById('adjTotal').textContent=r.servG>0?(n*r.servG)+'g total':'';
+  document.getElementById('dashServingNote').textContent='— '+n+' '+plural+' ('+n+'x serving)';
+  // Update bars with multiplied values
+  var m=n;
+  document.getElementById('rBars').innerHTML=
+    bar('Added Sugar',+(r.sugar*m).toFixed(1),25,'g',lvl(r.sugar*m,KIDS_THRESH.sugAlert,KIDS_THRESH.sugWatch,false),'🍬',false)+
+    bar('Sodium',Math.round(r.sodium*m),1200,'mg',lvl(r.sodium*m,KIDS_THRESH.sodAlert,KIDS_THRESH.sodWatch,false),'🧂',false)+
+    bar('Protein',+(r.prot*m).toFixed(1),20,'g',lvl(r.prot,8,4,true),'💪',true)+
+    bar('Calories',Math.round(r.cals*m),500,' kcal',lvl(r.cals*m,KIDS_THRESH.calAlert,KIDS_THRESH.calWatch,false),'🔥',false)+
+    bar('Saturated Fat',+(r.satf*m).toFixed(1),15,'g',lvl(r.satf*m,KIDS_THRESH.fatAlert,KIDS_THRESH.fatWatch,false),'🧈',false)+
+    bar('Total Carbs',Math.round(r.carb*m),275,'g',lvl(r.carb*m,KIDS_THRESH.carbAlert,KIDS_THRESH.carbWatch,false),'🍞',false);
+  // Update serve guide
+  document.getElementById('rServeGuide').innerHTML=buildServeGuide(r,n);
+  // Update daily impact
+  document.getElementById('rImpact').innerHTML=buildImpactSection(r,n,r.kidSkip);
+}
+function lvl(val,alertT,watchT,isProtein){
+  if(isProtein)return val>=8?'good':val>=4?'watch':'alert';
+  return val>alertT?'alert':val>watchT?'watch':'good';
+}
+
+/* ══ SMART PAIRINGS ══ */
+function getSmartPairings(r){
+  var active=getActiveProfiles();var hasYoung=active.indexOf('young')!==-1;
+  var pool=PAIRINGS.allGood;
+  if(r.sugar>KIDS_THRESH.sugAlert)pool=PAIRINGS.highSugar;
+  else if(r.sodium>KIDS_THRESH.sodAlert)pool=PAIRINGS.highSodium;
+  else if(r.prot<4)pool=PAIRINGS.lowProtein;
+  else if(r.satf>KIDS_THRESH.fatAlert)pool=PAIRINGS.highFat;
+  else if(r.carb>KIDS_THRESH.carbAlert)pool=PAIRINGS.highCarbs;
+  else if(r.cals>KIDS_THRESH.calAlert)pool=PAIRINGS.highCalories;
+  pool=pool.filter(function(p){return!(hasYoung&&PAIRINGS.youngExclude.indexOf(p.n)!==-1);});
+  if((r.sodium>KIDS_THRESH.sodAlert||r.sugar>KIDS_THRESH.sugWatch)&&!pool.find(function(p){return p.n==='Water';}))pool.unshift({e:'💧',n:'Water',r:'essential with high sodium/sugar'});
+  pool.sort(function(){return Math.random()-.5;});
+  return pool.slice(0,4);
+}
+
+/* ══ SERVE IT RIGHT ══ */
+function buildServeGuide(r,n){
+  var active=getActiveProfiles();var html='';
+  var unit=getServingUnit(r.prod);
+  PROFILES.forEach(function(p){
+    if(active.indexOf(p.id)===-1)return;
+    var kf=p.id==='young'?0.85:p.id==='older'?0.92:1;
+    // For bread/sliced items — don't reduce below 1 unit
+    var isBread=r.prod.toLowerCase().match(/bread|toast|loaf/i);
+    var childN=isBread?n:n; // same servings, smaller g
+    var childG=isBread?Math.round(r.servG*n):Math.round(r.servG*n*kf);
+    var sodPct=Math.round(r.sodium*n/p.sod*100);
+    var sugPct=Math.round(r.sugar*n/p.sug*100);
+    var carbPct=Math.round(r.carb*n/p.carb*100);
+    var tip='';
+    if(r.sodium*n>p.sod*0.5)tip='⚠️ High sodium for this serving. Watch other salty foods today.';
+    else if(r.sugar*n>p.sug*0.4)tip='⚠️ Moderate sugar. Pair with water, avoid juice.';
+    else if(r.prot<3)tip='💡 Low protein — add eggs, cheese or peanut butter alongside.';
+    else if(r.prot>=8)tip='✅ Good protein. Great energy for the day.';
+    else tip='✅ Balanced. Add fruit or veg to complete the meal.';
+    html+='<div class="serve-row"><div style="font-size:16px;flex-shrink:0;margin-top:2px">'+p.emoji+'</div><div style="flex:1">';
+    html+='<div class="serve-group">'+p.label+' (Ages '+p.age+')</div>';
+    html+='<div style="color:#22c55e;font-size:12px;font-weight:700;margin-bottom:4px">'+childN+' '+unit+(childN>1?'s':'')+' ('+childG+'g)</div>';
+    html+='<div class="serve-nutrient"><span class="serve-nkey">🧂 Sodium</span><span class="serve-nval" style="color:'+lc(lvl(r.sodium*n,p.sod*0.5,p.sod*0.25,false))+'">'+Math.round(r.sodium*n)+'mg ('+sodPct+'% daily)</span></div>';
+    html+='<div class="serve-nutrient"><span class="serve-nkey">🍬 Sugar</span><span class="serve-nval" style="color:'+lc(lvl(r.sugar*n,p.sug*0.4,p.sug*0.2,false))+'">'++(r.sugar*n).toFixed(1)+'g ('+sugPct+'% daily)</span></div>';
+    html+='<div class="serve-nutrient"><span class="serve-nkey">🍞 Carbs</span><span class="serve-nval" style="color:'+lc(lvl(r.carb*n,p.carb*0.4,p.carb*0.2,false))+'">'+Math.round(r.carb*n)+'g ('+carbPct+'% daily)</span></div>';
+    html+='<div class="serve-tip">'+tip+'</div>';
+    html+='</div></div>';
+  });
+  return html||'<div style="color:#8b92a8;font-size:11px">Set up profiles in Settings.</div>';
+}
+
+/* ══ DAILY IMPACT ══ */
+function buildImpactSection(r,n,isSkip){
+  var active=getActiveProfiles();var html='';var day=getDayData();
+  PROFILES.forEach(function(p){
+    if(active.indexOf(p.id)===-1)return;
+    var nutrients=[{k:'sod',label:'Sodium',val:Math.round(r.sodium*n),lim:p.sod,unit:'mg'},{k:'sug',label:'Sugar',val:+(r.sugar*n).toFixed(1),lim:p.sug,unit:'g'},{k:'fat',label:'Sat Fat',val:+(r.satf*n).toFixed(1),lim:p.fat,unit:'g'},{k:'carb',label:'Carbs',val:Math.round(r.carb*n),lim:p.carb,unit:'g'}];
+    html+='<div style="margin-bottom:10px;padding-bottom:10px;border-bottom:1px solid #2a2d3a">';
+    html+='<div style="color:#f0f4ff;font-size:11px;font-weight:700;margin-bottom:6px">'+p.emoji+' '+p.label+'</div>';
+    nutrients.forEach(function(n2){
+      var used=isSkip?0:(day[n2.k][p.id]||0);var total=used+n2.val;
+      var pct=Math.min(Math.round(total/n2.lim*100),100);var c=pct>=80?'#ef4444':pct>=50?'#f59e0b':'#22c55e';
+      html+='<div style="margin-bottom:5px"><div style="display:flex;justify-content:space-between;margin-bottom:2px">';
+      html+='<span style="color:#8b92a8;font-size:10px">'+n2.label+'</span>';
+      html+='<span style="color:'+c+';font-size:10px;font-weight:700">+'+n2.val+n2.unit+' → '+total+'/'+n2.lim+n2.unit+' ('+pct+'%)</span></div>';
+      html+='<div style="background:#2a2d3a;border-radius:99px;height:5px;overflow:hidden"><div style="width:'+pct+'%;height:100%;background:'+c+';border-radius:99px"></div></div></div>';
+    });
+    html+='</div>';
+  });
+  return html||'<div style="color:#8b92a8;font-size:11px">Set up profiles in Settings.</div>';
+}
+
+/* ══ ALTERNATIVES ══ */
+function buildAlternatives(r){
+  var items=[];
+  if(r.sodium>KIDS_THRESH.sodAlert)items.push({e:'🧂',t:'Sodium under 200mg per serving'});
+  if(r.sugar>KIDS_THRESH.sugAlert)items.push({e:'🍬',t:'Added sugars under 5g per serving'});
+  if(r.prot<5)items.push({e:'💪',t:'At least 5g protein per serving'});
+  if(r.satf>KIDS_THRESH.fatAlert)items.push({e:'🧈',t:'Saturated fat under 2g per serving'});
+  if(r.carb>KIDS_THRESH.carbAlert)items.push({e:'🍞',t:'Total carbs under 30g per serving'});
+  items.push({e:'✅',t:'Whole grain or whole wheat as first ingredient'});
+  return items.map(function(i){return '<div class="alt-item"><span>'+i.e+'</span><span>'+i.t+'</span></div>';}).join('');
+}
+
+/* ══ SCAN LOG ══ */
+function logScan(r,st){
+  var day=getDayData();
+  day.scans=day.scans.filter(function(s){return s.prod!==r.prod||s.status==='ate';});
+  day.scans.unshift({prod:r.prod,serv:r.serv,verdict:r.kidSkip?'SKIP':'BUY',sod:r.sodium,sug:r.sugar,fat:r.satf,carb:r.carb,prot:r.prot,cals:r.cals,score:r.score,status:st,time:new Date().toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'})});
+  if(day.scans.length>50)day.scans=day.scans.slice(0,50);
+  saveDayData(day);
+}
+function addToTracker(r,n){
+  var day=getDayData();var active=getActiveProfiles();
+  active.forEach(function(pid){day.sod[pid]=(day.sod[pid]||0)+Math.round(r.sodium*n);day.sug[pid]=(day.sug[pid]||0)++(r.sugar*n).toFixed(1)*1;day.fat[pid]=(day.fat[pid]||0)++(r.satf*n).toFixed(1)*1;day.carb[pid]=(day.carb[pid]||0)+Math.round(r.carb*n);});
+  for(var i=0;i<day.scans.length;i++){if(day.scans[i].prod===r.prod&&day.scans[i].status==='scanned'){day.scans[i].status='ate';day.scans[i].servings=n;break;}}
+  saveDayData(day);
+}
+function confirmAte(){
+  if(!_curResult)return;
+  addToTracker(_curResult,_curServings);
+  document.getElementById('actionBtns').style.display='none';
+  document.getElementById('ateConfirmed').style.display='block';
+  document.getElementById('ateConfirmed').textContent='✅ '+_curServings+' '+getServingUnit(_curResult.prod)+((_curServings>1)?'s':'')+' added to today\'s tracker!';
+  document.getElementById('rImpact').innerHTML=buildImpactSection(_curResult,_curServings,false);
+  document.getElementById('impactHyp').textContent='';
+}
+function confirmBrowsing(){document.getElementById('actionBtns').style.display='none';}
+
+/* ══ RENDER ══ */
+function lc(l){return l==='good'?'#22c55e':l==='watch'?'#f59e0b':'#ef4444';}
+function lt(l,isP){if(isP)return l==='good'?'✓ Good':l==='watch'?'⚠ Low':'✗ Too Low';return l==='good'?'✓ Good':l==='watch'?'⚠ Watch':'✗ High';}
+function bar(lbl,val,max,unit,lvl2,emoji,isProtein){
+  var pct=Math.min(val/max*100,100);var c=lc(lvl2);
+  return '<div class="srow"><div class="stop"><span class="slbl">'+emoji+' '+lbl+'</span><span class="sval" style="color:'+c+'">'+val+unit+'<span class="stag">'+lt(lvl2,isProtein)+'</span></span></div><div class="bbg"><div class="bfill" style="width:'+pct+'%;background:linear-gradient(90deg,'+c+'99,'+c+');box-shadow:0 0 5px '+c+'55"></div></div></div>';
+}
+
+function verdictStyle(skip,watch){
+  if(skip)return{bg:'#271616',border:'#ef4444',ico:'❌',titleColor:'#ef4444'};
+  if(watch)return{bg:'#1c1a10',border:'#f59e0b',ico:'⚠️',titleColor:'#f59e0b'};
+  return{bg:'#16271e',border:'#22c55e',ico:'✅',titleColor:'#22c55e'};
+}
+function verdictText(skip,watch,isKids){
+  if(isKids){if(skip)return'NOT FOR KIDS';return'GOOD FOR KIDS';}
+  if(skip)return'WATCH FOR ADULTS';if(watch)return'OKAY FOR ADULTS';return'GOOD FOR ADULTS';
+}
+
+function render(r,n){
+  var prefs=getPrefs();
+  var sc=r.score,cc=sc>=70?'#22c55e':sc>=45?'#f59e0b':'#ef4444';
+  document.getElementById('rName').textContent=r.prod;
+  document.getElementById('rServ').textContent='Serving: '+r.serv;
+  document.getElementById('rRing').style.background='conic-gradient('+cc+' '+sc+'%, #2a2d3a '+sc+'%)';
+  document.getElementById('rScore').style.color=cc;document.getElementById('rScore').textContent=sc;
+
+  // Kids verdict
+  var ks=verdictStyle(r.kidSkip,false);
+  var vk=document.getElementById('vKids');vk.style.background=ks.bg;vk.style.border='1.5px solid '+ks.border;
+  document.getElementById('vKidsIco').textContent=ks.ico;
+  document.getElementById('vKidsTitle').style.color=ks.titleColor;
+  document.getElementById('vKidsTitle').textContent=verdictText(r.kidSkip,false,true);
+  document.getElementById('vKidsReason').textContent=r.kidReason;
+
+  // Adult verdict
+  var as=verdictStyle(r.adultSkip,r.adultWatch&&!r.adultSkip);
+  var va=document.getElementById('vAdults');va.style.background=as.bg;va.style.border='1.5px solid '+as.border;
+  document.getElementById('vAdultsIco').textContent=as.ico;
+  document.getElementById('vAdultsTitle').style.color=as.titleColor;
+  document.getElementById('vAdultsTitle').textContent=verdictText(r.adultSkip,r.adultWatch,false);
+  document.getElementById('vAdultsReason').textContent=r.adultReason;
+
+  // Action buttons
+  if(!r.kidSkip){document.getElementById('actionBtns').style.display='flex';document.getElementById('skipLogged').style.display='none';}
+  else{document.getElementById('actionBtns').style.display='none';document.getElementById('skipLogged').style.display='block';}
+  document.getElementById('ateConfirmed').style.display='none';
+
+  // Serving adjuster setup
+  _curServings=n;
+  var unit=getServingUnit(r.prod);
+  document.getElementById('adjCount').textContent=n;
+  document.getElementById('adjUnit').textContent=n===1?unit:unit+'s';
+  document.getElementById('adjTotal').textContent=r.servG>0?(n*r.servG)+'g total':'';
+  document.getElementById('dashServingNote').textContent=n>1?'— '+n+' '+(n===1?unit:unit+'s')+' ('+n+'x serving)':'— as labeled';
+
+  // Nutrition bars (multiplied)
+  document.getElementById('rBars').innerHTML=
+    bar('Added Sugar',+(r.sugar*n).toFixed(1),25,'g',lvl(r.sugar*n,KIDS_THRESH.sugAlert,KIDS_THRESH.sugWatch,false),'🍬',false)+
+    bar('Sodium',Math.round(r.sodium*n),1200,'mg',lvl(r.sodium*n,KIDS_THRESH.sodAlert,KIDS_THRESH.sodWatch,false),'🧂',false)+
+    bar('Protein',+(r.prot*n).toFixed(1),20,'g',lvl(r.prot,8,4,true),'💪',true)+
+    bar('Calories',Math.round(r.cals*n),500,' kcal',lvl(r.cals*n,KIDS_THRESH.calAlert,KIDS_THRESH.calWatch,false),'🔥',false)+
+    bar('Saturated Fat',+(r.satf*n).toFixed(1),15,'g',lvl(r.satf*n,KIDS_THRESH.fatAlert,KIDS_THRESH.fatWatch,false),'🧈',false)+
+    bar('Total Carbs',Math.round(r.carb*n),275,'g',lvl(r.carb*n,KIDS_THRESH.carbAlert,KIDS_THRESH.carbWatch,false),'🍞',false);
+
+  // Serve It Right
+  document.getElementById('serveBox').style.display='block';
+  document.getElementById('rServeGuide').innerHTML=buildServeGuide(r,n);
+
+  // Label Reality Check
+  if(prefs.showVariance){
+    document.getElementById('rRealityBox').style.display='block';
+    document.getElementById('realitySub').textContent='⚠️ FDA allows up to 20% variance on labels. Revised estimates at '+n+' serving'+(n>1?'s':'')+':';
+    var rows=[
+      {lbl:'🍬 Sugar',orig:+(r.sugar*n).toFixed(1)+'g',rev:+(r.rSugar*n).toFixed(1)+(r.sugar===0?'g ⚠️':'g'),ol:r.sl,rl:r.rsl},
+      {lbl:'🧂 Sodium',orig:Math.round(r.sodium*n)+'mg',rev:Math.round(r.rSodium*n)+(r.sodium===0?'mg ⚠️':'mg'),ol:r.nl,rl:r.rnl},
+      {lbl:'💪 Protein',orig:+(r.prot*n).toFixed(1)+'g',rev:+(r.rProt*n).toFixed(1)+'g',ol:r.pl,rl:r.rpl,isProt:true},
+      {lbl:'🔥 Calories',orig:Math.round(r.cals*n)+' kcal',rev:Math.round(r.rCals*n)+' kcal',ol:r.cl,rl:r.rcl},
+      {lbl:'🧈 Sat Fat',orig:+(r.satf*n).toFixed(1)+'g',rev:+(r.rSatf*n).toFixed(1)+(r.satf===0?'g ⚠️':'g'),ol:r.fl,rl:r.rfl},
+      {lbl:'🍞 Carbs',orig:Math.round(r.carb*n)+'g',rev:Math.round(r.rCarb*n)+'g',ol:r.bl,rl:r.rbl},
+    ];
+    var thtml='';
+    rows.forEach(function(row){
+      var changed=row.ol!==row.rl;
+      thtml+='<tr style="background:'+(changed?'#1c1510':'transparent')+'"><td>'+row.lbl+'</td><td style="color:'+lc(row.ol)+'">'+row.orig+'</td><td style="color:'+lc(row.rl)+'">'+row.rev+(changed?' ⚠️':'')+'</td><td style="color:'+lc(row.rl)+'">'+lt(row.rl,row.isProt)+'</td></tr>';
+    });
+    var hasZero=r.sugar===0||r.sodium===0||r.satf===0;
+    if(hasZero)thtml+='<tr><td colspan="4" style="color:#f59e0b;font-size:9px;padding:7px 5px;line-height:1.4">* FDA rounding: values shown as 0 may legally contain up to 0.49g (fat/sugar) or trace sodium. True zero is rare in processed foods.</td></tr>';
+    document.getElementById('rRealityTable').innerHTML=thtml;
+
+    // Revised Recommendation
+    var rb=document.getElementById('rRevisedBox');
+    var bothOk=!r.rKidSkip&&!r.rAdultSkip;
+    rb.style.background=bothOk?'#16271e':'#1a1a10';
+    rb.style.border='1.5px solid '+(bothOk?'#22c55e55':'#f59e0b55');
+    document.getElementById('rRevTitle').style.color=bothOk?'#22c55e':'#f59e0b';
+
+    var rkStyle=verdictStyle(r.rKidSkip,false);
+    var raStyle=verdictStyle(r.rAdultSkip,false);
+    document.getElementById('rRevRows').innerHTML=
+      '<div class="revised-row"><div class="revised-ico">'+rkStyle.ico+'</div><div><div class="revised-who">👧 KIDS (REVISED)</div><div class="revised-verdict" style="color:'+rkStyle.titleColor+'">'+(r.rKidSkip?'NOT RECOMMENDED':'STILL GOOD FOR KIDS')+'</div><div class="revised-note">'+(r.rKidSkip?'Crosses unsafe threshold at +20% variance.':'Remains within safe limits even at worst-case estimates.')+'</div></div></div>'+
+      '<div class="revised-row"><div class="revised-ico">'+raStyle.ico+'</div><div><div class="revised-who">👨 ADULTS (REVISED)</div><div class="revised-verdict" style="color:'+raStyle.titleColor+'">'+(r.rAdultSkip?'WATCH INTAKE':'STILL GOOD FOR ADULTS')+'</div><div class="revised-note">'+(r.rAdultSkip?'High values confirmed even at +20%. Moderate portions.':'Within healthy adult limits at worst-case estimates.')+'</div></div></div>';
+
+    var watches=[];
+    if(r.rSodium*n>200||r.sodium===0)watches.push('💡 Sodium could reach '+Math.round(r.rSodium*n)+'mg — '+(r.sodium===0?'FDA allows rounding 0mg on labels':'at worst-case estimate')+'.');
+    if(r.rSugar*n>5||r.sugar===0)watches.push('💡 Sugar could reach '+(+(r.rSugar*n).toFixed(1))+'g'+(r.sugar===0?' — 0g label can hide up to 0.4g':'')+'.');
+    if(r.rProt*n<4)watches.push('💡 Protein as low as '+(+(r.rProt*n).toFixed(1))+'g — pair with protein-rich food.');
+    if(r.satf===0)watches.push('💡 Sat fat shows 0g — may contain up to 0.4g per serving (FDA rounding).');
+    document.getElementById('rRevWatches').innerHTML=watches.map(function(w){return '<div style="color:#8b92a8;font-size:10px;margin-bottom:4px;line-height:1.4">'+w+'</div>';}).join('');
+  } else {
+    document.getElementById('rRealityBox').style.display='none';
+    document.getElementById('rRevisedBox').style.display='none';
+  }
+
+  // Hidden Sugar Scan
+  if(prefs.scanSugar){
+    var sugarFound=scanHiddenSugars(r.ingr);var sb=document.getElementById('rSugarBox');
+    if(sugarFound.length>0){sb.style.background='#1c1510';sb.style.border='1.5px solid #f59e0b55';document.getElementById('rSugarTitle').style.color='#f59e0b';document.getElementById('rSugarTitle').textContent='🍬 HIDDEN SUGAR SCAN — '+sugarFound.length+' ALIAS'+(sugarFound.length>1?'ES':'')+' FOUND';document.getElementById('rSugarList').innerHTML=sugarFound.slice(0,6).map(function(a){return '<div class="alias-item"><span>⚠️</span><span>'+a.name+'<span class="alias-type">— '+a.type+'</span></span></div>';}).join('')+'<div style="color:#8b92a8;font-size:10px;margin-top:7px">Real sugar content likely higher than '++(r.sugar*n).toFixed(1)+'g labeled.</div>';}
+    else{sb.style.background='#16271e';sb.style.border='1.5px solid #22c55e44';document.getElementById('rSugarTitle').style.color='#22c55e';document.getElementById('rSugarTitle').textContent='🍬 HIDDEN SUGAR SCAN — CLEAN';document.getElementById('rSugarList').innerHTML='<div style="color:#8b92a8;font-size:11px">✅ No sugar aliases detected in the ingredients list.</div>';}
+  } else document.getElementById('rSugarBox').style.display='none';
+
+  // Additives Scan
+  if(prefs.flagAdditives){
+    var additFound=scanAdditives(r.ingr);var ib=document.getElementById('rIngrBox');
+    if(additFound.length>0){ib.style.background='#1a1010';ib.style.border='1.5px solid #ef444433';document.getElementById('rIngrTitle').style.color='#ef4444';document.getElementById('rIngrTitle').textContent='🧪 ADDITIVES FOUND — '+additFound.length+' ITEM'+(additFound.length>1?'S':'');document.getElementById('rIngrList').innerHTML=additFound.slice(0,6).map(function(a){return '<div class="additive-item"><div class="additive-name">⚠️ '+a.name+'</div><div class="additive-desc">'+a.desc+'</div></div>';}).join('');var sev=additFound.length>=5?'Highly processed':additFound.length>=3?'Moderately processed':'Mildly processed';document.getElementById('rIngrNote').textContent='Assessment: '+sev+'. All FDA-approved but minimizing processed ingredients is recommended for children\'s long-term health.';}
+    else if(r.ingr){ib.style.background='#16271e';ib.style.border='1.5px solid #22c55e44';document.getElementById('rIngrTitle').style.color='#22c55e';document.getElementById('rIngrTitle').textContent='🧪 INGREDIENTS SCAN — CLEAN';document.getElementById('rIngrList').innerHTML='<div style="color:#8b92a8;font-size:11px">✅ No concerning additives detected. Relatively clean ingredient profile.</div>';document.getElementById('rIngrNote').textContent='';}
+    else ib.style.display='none';
+  } else document.getElementById('rIngrBox').style.display='none';
+
+  // Daily Impact
+  document.getElementById('impactHyp').textContent=r.kidSkip?'⚠️ Hypothetical — not added since item skipped.':'Tap "We Ate This" to add to tracker.';
+  document.getElementById('rImpact').innerHTML=buildImpactSection(r,n,r.kidSkip);
+
+  // Alternatives
+  if(r.kidSkip){document.getElementById('rAltBox').className='alt-box visible';document.getElementById('rAltList').innerHTML=buildAlternatives(r);}
+  else document.getElementById('rAltBox').className='alt-box';
+
+  // Smart Pairings
+  document.getElementById('rChips').innerHTML=getSmartPairings(r).map(function(p){return '<div class="chip"><span>'+p.e+'</span><span>'+p.n+'</span><span class="chipr">— '+p.r+'</span></div>';}).join('');
+
+  document.getElementById('rawBox').textContent=_raw;
+  document.getElementById('results').className='visible';
+  document.getElementById('btnAnalyze').style.display='none';
+}
+
+/* ══ SUGAR & ADDITIVE SCANNERS ══ */
+function scanHiddenSugars(ingr){
+  if(!ingr)return[];var found=[];var iu=ingr.toUpperCase();
+  SUGAR_ALIASES.forEach(function(a){if(iu.indexOf(a.name.toUpperCase())!==-1)found.push(a);});
+  var ose=ingr.match(/\b\w+ose\b/gi)||[];
+  ose.forEach(function(m){if(!found.find(function(f){return f.name.toUpperCase()===m.toUpperCase();}))found.push({name:m,type:'sugar (-ose suffix)'});});
+  return found;
+}
+function scanAdditives(ingr){
+  if(!ingr)return[];var found=[];var iu=ingr.toUpperCase();
+  ADDITIVES.forEach(function(a){if(iu.indexOf(a.name.toUpperCase())!==-1)found.push(a);});
+  return found;
+}
+
+/* ══ DASHBOARD ══ */
+function trackerHTML(nutrient,unit,limitKey){
+  var day=getDayData();var active=getActiveProfiles();var html='';
+  if(!active.length)return '<div style="color:#8b92a8;font-size:11px">No profiles. Go to Settings.</div>';
+  active.forEach(function(pid){var p=PROFILES.find(function(x){return x.id===pid;});if(!p)return;var used=day[nutrient][pid]||0,lim=p[limitKey];var pct=Math.min(Math.round(used/lim*100),100);var c=pct>=80?'#ef4444':pct>=50?'#f59e0b':p.color;html+='<div class="trow"><div class="trow-head"><span class="trow-group">'+p.emoji+' '+p.label+'</span><span class="trow-val" style="color:'+c+'">'+used+' / '+lim+unit+'</span></div><div class="trow-bar-bg"><div class="trow-bar-fill" style="width:'+pct+'%;background:'+c+'"></div></div><div class="trow-note">'+(lim-used>0?(lim-used)+unit+' remaining'+(pct>=80?' ⚠️':pct>=50?' — watch it':''):'⚠️ Daily limit reached!')+'</div></div>';});
+  return html;
+}
+
+function renderDashboard(period){
+  if(period==='today'){
+    var day=getDayData();var active=getActiveProfiles();var worstPct=0;
+    active.forEach(function(pid){var p=PROFILES.find(function(x){return x.id===pid;});if(!p)return;var pct=Math.max((day.sod[pid]||0)/p.sod*100,(day.sug[pid]||0)/p.sug*100);if(pct>worstPct)worstPct=pct;});
+    var fv=document.getElementById('familyVerdict');
+    if(worstPct>=80){fv.style.background='#271616';fv.style.border='1.5px solid #ef4444';fv.innerHTML='<div class="fv-title" style="color:#ef4444">⚠️ HIGH INTAKE TODAY</div><div class="fv-sub" style="color:#8b92a8">Near daily limit. Choose light, whole foods for remaining meals.</div>';}
+    else if(worstPct>=50){fv.style.background='#1c1a10';fv.style.border='1.5px solid #f59e0b';fv.innerHTML='<div class="fv-title" style="color:#f59e0b">👀 MODERATE TODAY</div><div class="fv-sub" style="color:#8b92a8">Getting toward midpoint. Be mindful for the rest of the day.</div>';}
+    else{fv.style.background='#16271e';fv.style.border='1.5px solid #22c55e';fv.innerHTML='<div class="fv-title" style="color:#22c55e">✅ GREAT DAY SO FAR</div><div class="fv-sub" style="color:#8b92a8">All family members within healthy limits. Keep it up!</div>';}
+    document.getElementById('sodTracker').innerHTML=trackerHTML('sod','mg','sod');
+    document.getElementById('sugTracker').innerHTML=trackerHTML('sug','g','sug');
+    document.getElementById('fatTracker').innerHTML=trackerHTML('fat','g','fat');
+    document.getElementById('carbTracker').innerHTML=trackerHTML('carb','g','carb');
+    document.getElementById('todayHistory').innerHTML=histHTML(day.scans,15);
+  } else if(period==='week'){
+    document.getElementById('weekSodChart').innerHTML=weekChart('sod','sod');
+    document.getElementById('weekSugChart').innerHTML=weekChart('sug','sug');
+    var all=getAllScans();var cutoff=new Date();cutoff.setDate(cutoff.getDate()-7);
+    var ws=all.filter(function(s){return s._date>=dateKey(cutoff);});
+    document.getElementById('weekStats').innerHTML=statsGrid(ws);
+    document.getElementById('weekHistory').innerHTML=histHTML(ws,20);
+  } else if(period==='month'){
+    var aAll=getAllScans();var mc=new Date();mc.setDate(mc.getDate()-30);
+    var ms=aAll.filter(function(s){return s._date>=dateKey(mc);});
+    document.getElementById('monthStats').innerHTML=statsGrid(ms);
+    document.getElementById('monthSkipped').innerHTML=topFoods(ms,'SKIP',5);
+    document.getElementById('monthApproved').innerHTML=topFoods(ms,'BUY',5);
+    var wkHtml='';
+    for(var w=3;w>=0;w--){var ws2=new Date();ws2.setDate(ws2.getDate()-((w+1)*7));var we=new Date();we.setDate(we.getDate()-(w*7));var wSc=aAll.filter(function(s){return s._date>=dateKey(ws2)&&s._date<dateKey(we);});var wAvg=wSc.length?Math.round(wSc.reduce(function(a,s){return a+s.score;},0)/wSc.length):0;var wC=wAvg>=70?'#22c55e':wAvg>=45?'#f59e0b':'#ef4444';wkHtml+='<div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid #2a2d3a"><span style="color:#f0f4ff;font-size:12px">Week of '+ws2.toLocaleDateString([],{month:'short',day:'numeric'})+'</span><span style="color:'+wC+';font-size:12px;font-weight:700">'+wSc.length+' scans · avg '+wAvg+'/100</span></div>';}
+    document.getElementById('monthBreakdown').innerHTML=wkHtml||'<div style="color:#8b92a8;font-size:11px">No data yet.</div>';
+  } else if(period==='alltime'){
+    var aa=getAllScans();
+    document.getElementById('allStats').innerHTML=statsGrid(aa);
+    document.getElementById('allSkipped').innerHTML=topFoods(aa,'SKIP',8);
+    document.getElementById('allApproved').innerHTML=topFoods(aa,'BUY',8);
+    var tHtml='';
+    for(var td=29;td>=0;td-=3){var td_d=new Date();td_d.setDate(td_d.getDate()-td);var td_k=dateKey(td_d);var td_s=aa.filter(function(s){return s._date===td_k;});if(!td_s.length)continue;var td_a=Math.round(td_s.reduce(function(a,s){return a+s.score;},0)/td_s.length);var td_c=td_a>=70?'#22c55e':td_a>=45?'#f59e0b':'#ef4444';tHtml+='<div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid #2a2d3a"><span style="color:#8b92a8;font-size:11px">'+td_d.toLocaleDateString([],{month:'short',day:'numeric'})+'</span><span style="color:'+td_c+';font-size:11px;font-weight:700">'+td_s.length+' scans · avg '+td_a+'/100</span></div>';}
+    document.getElementById('allTrend').innerHTML=tHtml||'<div style="color:#8b92a8;font-size:11px">Scan more foods to see trends.</div>';
+  }
+}
+
+function weekChart(nutrient,limitKey){
+  var days=['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];var today=new Date();var html='<div class="week-chart">';var vals=[];
+  for(var i=6;i>=0;i--){var d=new Date(today);d.setDate(d.getDate()-i);var dk=dateKey(d);var dd=getDayData(dk);var active=getActiveProfiles();var worst=0;active.forEach(function(pid){var p=PROFILES.find(function(x){return x.id===pid;});if(!p)return;var pct=(dd[nutrient][pid]||0)/p[limitKey]*100;if(pct>worst)worst=pct;});vals.push({day:days[d.getDay()],pct:Math.min(worst,100),isToday:i===0});}
+  vals.forEach(function(v){var c=v.pct>=80?'#ef4444':v.pct>=50?'#f59e0b':'#22c55e';html+='<div class="week-bar-wrap"><div class="week-val" style="color:'+c+'">'+Math.round(v.pct)+'%</div><div class="week-bar-bg"><div class="week-bar-fill" style="height:'+v.pct+'%;background:'+c+'"></div></div><div class="week-label" style="color:'+(v.isToday?'#6ee7f7':'#8b92a8')+'">'+v.day+'</div></div>';});
+  return html+'</div><div style="color:#8b92a8;font-size:10px;text-align:right">% of daily limit (worst member)</div>';
+}
+function histHTML(scans,limit){
+  if(!scans||!scans.length)return '<div style="color:#8b92a8;font-size:11px;text-align:center;padding:16px 0">No scans yet. Start scanning labels! 📷</div>';
+  return scans.slice(0,limit).map(function(s){var bc=s.status==='ate'?'ate':s.verdict==='BUY'?'buy':'skip';var bt=s.status==='ate'?'✅ ATE'+(s.servings&&s.servings>1?' ('+s.servings+'x)':''):s.verdict==='BUY'?'BUY':'⏭️ SKIP';return '<div class="hist-item"><div class="hist-top"><span class="hist-name">'+s.prod+'</span><span class="hist-badge '+bc+'">'+bt+'</span></div><div class="hist-stats">🧂'+s.sod+'mg 🍬'+s.sug+'g 🧈'+s.fat+'g 🍞'+s.carb+'g ⭐'+s.score+'</div><div class="hist-time">🕐 '+(s.time||'')+(s._date?' · '+s._date:'')+'</div></div>';}).join('');
+}
+function statsGrid(scans){
+  var buy=scans.filter(function(s){return s.verdict==='BUY';}).length;var skip=scans.filter(function(s){return s.verdict==='SKIP';}).length;
+  var ate=scans.filter(function(s){return s.status==='ate';}).length;var avg=scans.length?Math.round(scans.reduce(function(a,s){return a+s.score;},0)/scans.length):0;
+  return '<div class="stat-box"><div class="stat-box-num">'+scans.length+'</div><div class="stat-box-lbl">Total Scans</div></div><div class="stat-box"><div class="stat-box-num" style="color:#6ee7f7">'+avg+'</div><div class="stat-box-lbl">Avg Score</div></div><div class="stat-box"><div class="stat-box-num" style="color:#ef4444">'+skip+'</div><div class="stat-box-lbl">Avoided</div></div><div class="stat-box"><div class="stat-box-num" style="color:#22c55e">'+ate+'</div><div class="stat-box-lbl">Eaten</div></div>';
+}
+function topFoods(scans,verdict,limit){
+  var counts={};scans.filter(function(s){return s.verdict===verdict;}).forEach(function(s){counts[s.prod]=(counts[s.prod]||0)+1;});
+  var sorted=Object.keys(counts).sort(function(a,b){return counts[b]-counts[a];}).slice(0,limit);
+  return sorted.length?sorted.map(function(n,i){return '<div style="display:flex;justify-content:space-between;padding:7px 0;border-bottom:1px solid #2a2d3a"><span style="color:#f0f4ff;font-size:12px">'+(i+1)+'. '+n+'</span><span style="color:#8b92a8;font-size:11px">'+counts[n]+'x</span></div>';}).join(''):'<div style="color:#8b92a8;font-size:11px;padding:8px 0">None yet.</div>';
+}
+
+/* ══ SETTINGS ══ */
+function renderSettings(){
+  var active=getActiveProfiles();var prefs=getPrefs();var html='';
+  PROFILES.forEach(function(p){var on=active.indexOf(p.id)!==-1;html+='<div class="setting-row"><div><div class="setting-label">'+p.emoji+' '+p.label+'</div><div class="setting-sub">Ages '+p.age+' · Na:'+p.sod+'mg · Sugar:'+p.sug+'g · Fat:'+p.fat+'g · Carbs:'+p.carb+'g</div></div><div class="toggle '+(on?'on':'')+'" onclick="toggleProfile(\''+p.id+'\')"></div></div>';});
+  document.getElementById('profileSettings').innerHTML=html;
+  document.getElementById('togVariance').className='toggle'+(prefs.showVariance?' on':'');
+  document.getElementById('togSugar').className='toggle'+(prefs.scanSugar?' on':'');
+  document.getElementById('togAdditives').className='toggle'+(prefs.flagAdditives?' on':'');
+  document.getElementById('toggleMidnight').className='toggle'+(prefs.autoReset?' on':'');
+  document.getElementById('keyStatus').textContent=getKey()?'Key saved ✅':'No key saved';
+  var lhtml='';PROFILES.forEach(function(p){lhtml+='<div class="setting-row"><div><div class="setting-label">'+p.emoji+' '+p.label+' ('+p.age+')</div><div class="setting-sub">Na: '+p.sod+'mg · Sugar: '+p.sug+'g · Sat Fat: '+p.fat+'g · Carbs: '+p.carb+'g/day</div></div></div>';});
+  document.getElementById('limitsRef').innerHTML=lhtml;
+}
+function toggleProfile(pid){var active=getActiveProfiles();var idx=active.indexOf(pid);if(idx===-1)active.push(pid);else active.splice(idx,1);saveActiveProfiles(active);renderSettings();}
+function togglePref(key){var prefs=getPrefs();prefs[key]=!prefs[key];savePrefs(prefs);renderSettings();}
+function resetDay(){if(confirm('Reset today\'s intake tracker?')){localStorage.removeItem('kfs_d_'+dateKey());renderDashboard('today');}}
+function clearAll(){Object.keys(localStorage).forEach(function(k){if(k.startsWith('kfs_d_'))localStorage.removeItem(k);});renderDashboard(_curPeriod);}
+
+/* ══ HELPERS ══ */
+function status(msg){var b=document.getElementById('statusBar');b.className='visible';b.textContent=msg;}
+function showErr(msg){var b=document.getElementById('errBox');b.className='visible';document.getElementById('errMsg').textContent=msg;}
+function toggleRaw(){var b=document.getElementById('rawBox'),btn=document.getElementById('rawToggle');var v=b.style.display==='block';b.style.display=v?'none':'block';btn.textContent=v?'▼ Show raw reading':'▲ Hide raw reading';}
+function resetSoft(){_b64=null;_raw='';_curResult=null;_curServings=1;document.getElementById('results').className='';document.getElementById('errBox').className='';document.getElementById('statusBar').className='';document.getElementById('ateConfirmed').style.display='none';document.getElementById('skipLogged').style.display='none';var btn=document.getElementById('btnAnalyze');btn.className='busy';btn.disabled=true;btn.textContent='⏳ PREPARING...';btn.style.display='';}
+function resetAll(){resetSoft();var dz=document.getElementById('dropZone');dz.classList.remove('hasImg');dz.innerHTML='<div class="ico">📷</div><div class="lbl">Tap to snap or upload</div><div class="sub">Photo of a nutrition label</div>';document.getElementById('fileIn').value='';document.getElementById('statusBar').className='';document.getElementById('btnAnalyze').style.display='none';}
+loadKey();
 </script>
 </body>
 </html>
