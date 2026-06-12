@@ -218,16 +218,14 @@ body{background:#0f1117;font-family:'DM Sans',sans-serif;min-height:100vh;paddin
 
 <!-- ══ SCANNER ══ -->
 <div class="screen active" id="screenScanner">
-  <div id="apiSetup" style="position:relative;z-index:99">
+  <div id="apiSetup">
     <div class="setup-title">🔑 API KEY REQUIRED</div>
-    <div id="apiDesc" style="color:#8b92a8;font-size:11px;margin-bottom:10px;line-height:1.5">
-      Paste your key — it saves <strong style="color:#6ee7f7">automatically when you stop typing</strong>.<br/>
-      <a href="https://console.anthropic.com" target="_blank" style="color:#6ee7f7">console.anthropic.com</a>
-    </div>
-    <textarea id="apiKeyInput" rows="3" placeholder="sk-ant-api03-..." autocomplete="off" autocorrect="off" autocapitalize="none" spellcheck="false" oninput="onKeyInput(this.value)" style="width:100%;background:#0f1117;border:2px solid #6ee7f755;border-radius:8px;padding:12px;color:#f0f4ff;font-size:12px;font-family:monospace;outline:none;-webkit-appearance:none;display:block;box-sizing:border-box;resize:none;line-height:1.4"></textarea>
-    <div id="keyStatus" style="font-size:12px;text-align:center;padding:8px 0;min-height:20px;color:#8b92a8">Paste your full API key above</div>
-    <div id="keySaved" style="display:none;background:#16271e;border:1px solid #22c55e55;border-radius:10px;color:#22c55e;font-size:13px;text-align:center;padding:12px;font-weight:700">✅ Key saved! Tap the camera below to start scanning.</div>
-    <div id="keyChange" style="display:none;color:#8b92a8;font-size:11px;text-align:center;padding:6px 0;cursor:pointer;text-decoration:underline" onclick="doChange()">Change API key</div>
+    <div style="color:#8b92a8;font-size:11px;margin-bottom:10px">Enter your Anthropic API key.<br/><a href="https://console.anthropic.com" target="_blank" style="color:#6ee7f7">console.anthropic.com</a></div>
+    <input id="apiKeyInput" type="text" placeholder="sk-ant-api03-..." autocapitalize="none" autocorrect="off" autocomplete="off" spellcheck="false" style="width:100%;padding:12px;background:#0f1117;border:2px solid #6ee7f7;border-radius:8px;color:#f0f4ff;font-size:12px;font-family:monospace;box-sizing:border-box;display:block;margin-bottom:10px"/>
+    <input id="btnSave" type="button" value="SAVE API KEY" onclick="doSave()" style="width:100%;padding:16px;background:linear-gradient(135deg,#6ee7f7,#3b82f6);color:#0f1117;font-size:18px;font-family:'Bebas Neue',cursive;letter-spacing:3px;border:none;border-radius:10px;display:block;box-sizing:border-box;cursor:pointer"/>
+    <div id="keyStatus" style="color:#8b92a8;font-size:12px;text-align:center;padding:8px 0"></div>
+    <div id="keySaved" style="display:none;color:#22c55e;font-size:13px;text-align:center;padding:10px 0;font-weight:700">✅ Key saved! Ready to scan.</div>
+    <div id="keyChange" style="display:none;color:#8b92a8;font-size:11px;text-align:center;cursor:pointer;text-decoration:underline" onclick="doChange()">Change API key</div>
   </div>
   <div id="dropZone" onclick="document.getElementById('fileIn').click()">
     <div class="ico">📷</div><div class="lbl">Tap to snap or upload</div><div class="sub">Photo of a nutrition label</div>
@@ -487,12 +485,59 @@ function setPeriod(p){
 }
 
 /* ══ API KEY ══ */
+function doSave(){
+  var k = document.getElementById('apiKeyInput').value.trim();
+  var st = document.getElementById('keyStatus');
+  if(k.length < 10){
+    st.style.color = '#ef4444';
+    st.textContent = 'Key too short - paste full key';
+    return;
+  }
+  try {
+    localStorage.setItem('kfs_apikey', k);
+  } catch(e) {}
+  window._apiKeyFallback = k;
+  document.getElementById('apiKeyInput').style.display = 'none';
+  document.getElementById('btnSave').style.display = 'none';
+  document.getElementById('keySaved').style.display = 'block';
+  document.getElementById('keyChange').style.display = 'block';
+  st.textContent = '';
+}
+
+function doChange(){
+  window._apiKeyFallback = null;
+  try { localStorage.removeItem('kfs_apikey'); } catch(e) {}
+  document.getElementById('apiKeyInput').style.display = 'block';
+  document.getElementById('apiKeyInput').value = '';
+  document.getElementById('btnSave').style.display = 'block';
+  document.getElementById('keySaved').style.display = 'none';
+  document.getElementById('keyChange').style.display = 'none';
+  document.getElementById('keyStatus').textContent = '';
+}
+
 function loadKey(){
-  var k=getKey();
-  if(k&&k.length>10){
-    showKeySaved();
+  var k = '';
+  try { k = localStorage.getItem('kfs_apikey') || ''; } catch(e) {}
+  k = k || window._apiKeyFallback || '';
+  if(k && k.length > 10){
+    document.getElementById('apiKeyInput').style.display = 'none';
+    document.getElementById('btnSave').style.display = 'none';
+    document.getElementById('keySaved').style.display = 'block';
+    document.getElementById('keyChange').style.display = 'block';
   }
 }
+
+function getKey(){
+  var k = '';
+  try { k = localStorage.getItem('kfs_apikey') || ''; } catch(e) {}
+  return k || window._apiKeyFallback || '';
+}
+
+function saveKey(){ doSave(); }
+function changeKey(){ doChange(); }
+function formSaveKey(){ doSave(); }
+function tryAutoSave(v){ if(v && v.length > 10){ window._apiKeyFallback = v; } }
+function onKeyInput(v){ tryAutoSave(v); }
 
 function showKeySaved(){
   var inp=document.getElementById('apiKeyInput');
