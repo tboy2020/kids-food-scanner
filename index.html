@@ -1,4 +1,4 @@
-<!DOCTYPE html><!-- v2_165947 -->
+<!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8"/>
@@ -62,29 +62,6 @@ input[type=text]{width:100%;padding:14px;background:#0f1117;border:2px solid #6e
 @keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
 @keyframes spin{from{transform:rotate(0)}to{transform:rotate(360deg)}}
 .spin{animation:spin 1s linear infinite;display:inline-block}
-
-/* WHO + MEAL */
-.who-row{display:flex;flex-wrap:wrap;gap:7px;margin-bottom:4px}
-.who-chip{padding:8px 13px;border-radius:99px;border:1.5px solid #2a2d3a;background:#1a1d27;color:#8b92a8;font-size:12px;cursor:pointer;font-family:'DM Sans',sans-serif;font-weight:600}
-.who-chip.selected{border-color:#6ee7f7;color:#6ee7f7;background:#161c2a}
-.meal-grid{display:grid;grid-template-columns:1fr 1fr;gap:7px}
-.meal-chip{padding:9px 10px;border-radius:10px;border:1.5px solid #2a2d3a;background:#1a1d27;color:#8b92a8;font-size:11px;cursor:pointer;text-align:center;font-family:'DM Sans',sans-serif}
-.meal-chip.selected{border-color:#6ee7f7;color:#6ee7f7;background:#161c2a}
-/* Reality Check */
-.reality-box{background:#1a1a10;border:1.5px solid #f59e0b55;border-radius:13px;padding:13px 15px;margin-bottom:11px}
-.reality-title{color:#f59e0b;font-family:'Bebas Neue',cursive;font-size:15px;letter-spacing:2px;margin-bottom:5px}
-.reality-sub{color:#8b92a8;font-size:10px;margin-bottom:10px;line-height:1.4}
-.reality-table{width:100%;border-collapse:collapse}
-.reality-table th{color:#8b92a8;font-size:10px;padding:4px 5px;text-align:left;border-bottom:1px solid #2a2d3a}
-.reality-table th:not(:first-child){text-align:right}
-.reality-table td{padding:5px 5px;font-size:11px;border-bottom:1px solid #1a1d2a}
-.reality-table td:first-child{color:#f0f4ff;font-weight:600}
-.reality-table td:not(:first-child){text-align:right;font-family:monospace;font-weight:700}
-/* Vitamins */
-.vit-row{display:flex;align-items:center;gap:8px;padding:6px 0;border-bottom:1px solid #2a2d3a}
-.vit-row:last-child{border-bottom:none}
-/* Revised box */
-.revised-box{border-radius:13px;padding:13px 15px;margin-bottom:11px}
 </style>
 </head>
 <body>
@@ -158,57 +135,9 @@ input[type=text]{width:100%;padding:14px;background:#0f1117;border:2px solid #6e
     <div id="ateMsg" style="display:none;background:#16271e;border:1px solid #22c55e44;border-radius:11px;padding:10px;margin-bottom:12px;color:#22c55e;font-size:12px;text-align:center"></div>
     <div id="skipMsg" style="display:none;background:#1c1a10;border:1px solid #f59e0b44;border-radius:11px;padding:10px;margin-bottom:12px;color:#f59e0b;font-size:12px;text-align:center">📋 Skipped — logged in history.</div>
 
-    <!-- WHO + MEAL (shown after scan) -->
-    <div class="card" id="whoMealCard" style="margin-bottom:11px">
-      <div style="font-family:'Bebas Neue',cursive;font-size:13px;letter-spacing:2px;color:#6ee7f7;margin-bottom:8px">👨‍👩‍👧‍👦 WHO ATE THIS?</div>
-      <div class="who-row" id="whoRow">
-        <div class="who-chip selected" data-who="everyone">👨‍👩‍👧‍👦 Everyone</div>
-        <div class="who-chip" data-who="anu">👧 Anu</div>
-        <div class="who-chip" data-who="dominion">👦 Dominion</div>
-        <div class="who-chip" data-who="taiwo">👨 Pastor Taiwo</div>
-        <div class="who-chip" data-who="vera">👩 Vera</div>
-      </div>
-      <div style="font-family:'Bebas Neue',cursive;font-size:13px;letter-spacing:2px;color:#6ee7f7;margin-bottom:8px;margin-top:10px">🍽️ WHICH MEAL?</div>
-      <div class="meal-grid" id="mealRow">
-        <div class="meal-chip selected" data-meal="breakfast">🌅 Breakfast</div>
-        <div class="meal-chip" data-meal="morningSnack">🍎 Morning Snack</div>
-        <div class="meal-chip" data-meal="lunch">🍽️ Lunch</div>
-        <div class="meal-chip" data-meal="afternoonSnack">🍪 Afternoon Snack</div>
-        <div class="meal-chip" data-meal="dinner">🌙 Dinner</div>
-        <div class="meal-chip" data-meal="eveningSnack">🌃 Evening Snack</div>
-      </div>
-    </div>
-
     <div class="dash-card"><div class="dash-title">📊 NUTRITION DASHBOARD <span style="font-size:10px;color:#8b92a8;font-family:'DM Sans',sans-serif;font-weight:400;letter-spacing:0" id="servNote"></span></div><div id="rBars"></div></div>
 
     <div class="pair-card"><div class="pair-title">🥗 PAIR IT WITH</div><div class="chips" id="rChips"></div></div>
-
-    <!-- TOTAL SUGARS + ADDED SUGARS note -->
-    <div class="dash-card" id="sugarDetail" style="margin-bottom:11px">
-      <div class="dash-title">🍬 SUGAR DETAIL</div>
-      <div id="rSugarDetail"></div>
-    </div>
-
-    <!-- VITAMINS & MINERALS -->
-    <div class="dash-card" id="vitaminsCard" style="margin-bottom:11px">
-      <div class="dash-title">💊 VITAMINS & MINERALS</div>
-      <div id="rVitamins"></div>
-    </div>
-
-    <!-- LABEL REALITY CHECK -->
-    <div class="reality-box" id="realityCard">
-      <div class="reality-title">🔬 LABEL REALITY CHECK</div>
-      <div class="reality-sub">⚠️ FDA allows ±20% variance. Actual values may be higher than labeled. Zero values may not be truly zero.</div>
-      <table class="reality-table">
-        <tr><th>Nutrient</th><th>Labeled</th><th>Realistic (+20%)</th><th>Status</th></tr>
-        <tbody id="rRealityRows"></tbody>
-      </table>
-    </div>
-
-    <!-- REVISED RECOMMENDATION -->
-    <div class="revised-box" id="revisedCard">
-      <div id="rRevisedContent"></div>
-    </div>
 
     <button type="button" class="scan-again" id="btnAgain">📷 Scan Another Product</button>
   </div>
@@ -246,61 +175,6 @@ input[type=text]{width:100%;padding:14px;background:#0f1117;border:2px solid #6e
 
 <script>
 'use strict';
-
-// WHO + MEAL state
-var _curWho = 'everyone';
-var _curMeal = 'breakfast';
-
-// WHO chip selection
-function initWhoMeal() {
-  document.querySelectorAll('.who-chip').forEach(function(chip) {
-    chip.addEventListener('click', function() {
-      document.querySelectorAll('.who-chip').forEach(function(c){c.classList.remove('selected');});
-      this.classList.add('selected');
-      _curWho = this.dataset.who;
-    });
-  });
-  document.querySelectorAll('.meal-chip').forEach(function(chip) {
-    chip.addEventListener('click', function() {
-      document.querySelectorAll('.meal-chip').forEach(function(c){c.classList.remove('selected');});
-      this.classList.add('selected');
-      _curMeal = this.dataset.meal;
-    });
-  });
-}
-
-// Vitamin helpers
-function vitBadge(pct){
-  if(pct===0)return'❌';
-  if(pct<6)return'⚠️';
-  if(pct<11)return'🟡';
-  if(pct<20)return'🟢';
-  return'⭐';
-}
-function vitLabel(pct){
-  if(pct===0)return'None';
-  if(pct<6)return'Minimal';
-  if(pct<11)return'Low';
-  if(pct<20)return'Good';
-  return'Excellent';
-}
-function vitColor(pct){
-  if(pct===0)return'#ef4444';
-  if(pct<6)return'#f59e0b';
-  if(pct<11)return'#f59e0b';
-  if(pct<20)return'#22c55e';
-  return'#22c55e';
-}
-
-// Reality check level
-function rlvl(val,alertT,watchT){return val>alertT?'alert':val>watchT?'watch':'good';}
-function rlvlPro(val){return val>=8?'good':val>=4?'watch':'alert';}
-function rlc(l){return l==='good'?'#22c55e':l==='watch'?'#f59e0b':'#ef4444';}
-function rlvlTag(l,isPro){
-  if(isPro)return l==='good'?'✓ Good':l==='watch'?'⚠ Low':'✗ Too Low';
-  return l==='good'?'✓ Good':l==='watch'?'⚠ Watch':'✗ High';
-}
-
 
 // ── STORAGE ──
 function getKey(){try{return localStorage.getItem('kfs_apikey')||'';}catch(e){return '';}}
@@ -499,33 +373,7 @@ function buildResult(t){
   pairings.push('🍎 Apple slices — fiber & vitamins');
   if(pairings.length<3)pairings.push('🥛 Milk — calcium & protein');
 
-  // Extra nutrients from label
-  var totalSug=numFrom(t,[/total sugars?\s*[:\-]?\s*(\d+(?:\.\d+)?)\s*g/i]);
-  var vitD=numFrom(t,[/vitamin d\s*[:\-]?\s*(\d+(?:\.\d+)?)\s*mcg/i,/vitamin d[^0-9]*(\d+(?:\.\d+)?)/i]);
-  var calcium=numFrom(t,[/calcium\s*[:\-]?\s*(\d+(?:\.\d+)?)\s*mg/i,/calcium[^0-9]*(\d+)/i]);
-  var iron=numFrom(t,[/iron\s*[:\-]?\s*(\d+(?:\.\d+)?)\s*mg/i,/iron[^0-9]*(\d+(?:\.\d+)?)/i]);
-  var potassium=numFrom(t,[/potassium\s*[:\-]?\s*(\d+(?:\.\d+)?)\s*mg/i,/potassium[^0-9]*(\d+)/i]);
-  var vitC=numFrom(t,[/vitamin c\s*[:\-]?\s*(\d+(?:\.\d+)?)\s*mg/i]);
-  var vitA=numFrom(t,[/vitamin a\s*[:\-]?\s*(\d+(?:\.\d+)?)\s*mcg/i]);
-
-  // FDA Reality (+20%, with zero floor)
-  var rSug  = totalSug===0 ? 0.4 : Math.round(totalSug*1.2*10)/10;
-  var rAsug = sugar===0    ? 0.4 : Math.round(sugar*1.2*10)/10;
-  var rSod  = sodium===0   ? 50  : Math.round(sodium*1.2);
-  var rPro  = Math.round(prot*0.8*10)/10;
-  var rCal  = Math.round(cals*1.2);
-  var rSat  = satf===0     ? 0.4 : Math.round(satf*1.2*10)/10;
-  var rCarb = Math.round(carb*1.2);
-
-  // Revised kid verdict based on realistic values
-  var rKidSkip = rAsug>10||rSod>400||(rCal>350&&rPro<5);
-  var rAdultSkip = rSod>900||rAsug>30||rSat>7;
-
-  return{prod,serv,servG,sugar,sodium,prot,cals,satf,carb,
-    totalSug,vitD,calcium,iron,potassium,vitC,vitA,
-    rSug,rAsug,rSod,rPro,rCal,rSat,rCarb,
-    rKidSkip,rAdultSkip,
-    kidSkip,adultSkip,adultWatch,kidReason,adultReason,score,pairings:pairings.slice(0,4)};
+  return{prod,serv,servG,sugar,sodium,prot,cals,satf,carb,kidSkip,adultSkip,adultWatch,kidReason,adultReason,score,pairings:pairings.slice(0,4)};
 }
 
 // ── RENDER ──
@@ -601,105 +449,6 @@ function renderResults(r,n){
 
   document.getElementById('results').style.display='block';
   document.getElementById('btnAnalyze').style.display='none';
-
-  // Init WHO/MEAL chips
-  initWhoMeal();
-
-  // SUGAR DETAIL
-  var sdHtml = '<div style="display:flex;justify-content:space-between;padding:5px 0;border-bottom:1px solid #2a2d3a">'
-    + '<span style="color:#f0f4ff;font-size:12px;font-weight:600">🍬 Total Sugars</span>'
-    + '<span style="color:#f0f4ff;font-size:12px;font-family:monospace">'+(r.totalSug||r.sugar)+'g</span></div>'
-    + '<div style="display:flex;justify-content:space-between;padding:5px 0">'
-    + '<span style="color:#8b92a8;font-size:11px">└ 🍭 Added Sugars</span>'
-    + '<span style="font-size:11px;font-family:monospace;color:'+lc(lvl(r.sugar,10,5))+'">'+r.sugar+'g <span style="color:#8b92a8;font-weight:400;font-size:10px">('+Math.round(r.sugar/25*100)+'% child daily limit)</span></span></div>'
-    + '<div style="color:#8b92a8;font-size:10px;margin-top:6px;line-height:1.4">Total Sugars = natural + added. Added Sugars are what manufacturers put in and are the key limit to watch.</div>';
-  document.getElementById('rSugarDetail').innerHTML = sdHtml;
-
-  // VITAMINS
-  var vits=[
-    {e:'☀️',n:'Vitamin D', val:r.vitD,   lim:15,  unit:'mcg'},
-    {e:'🦴',n:'Calcium',   val:r.calcium, lim:1000,unit:'mg'},
-    {e:'⚡',n:'Iron',      val:r.iron,    lim:10,  unit:'mg'},
-    {e:'🫀',n:'Potassium', val:r.potassium,lim:2300,unit:'mg'},
-    {e:'🍊',n:'Vitamin C', val:r.vitC,   lim:25,  unit:'mg'},
-    {e:'👁️',n:'Vitamin A', val:r.vitA,   lim:400, unit:'mcg'},
-  ];
-  var vitHtml='';
-  vits.forEach(function(v){
-    var pct=v.lim>0?Math.round(v.val/v.lim*100):0;
-    var c=vitColor(pct);
-    vitHtml+='<div class="vit-row">'
-      +'<span style="font-size:14px;width:20px;text-align:center;flex-shrink:0">'+v.e+'</span>'
-      +'<span style="color:#f0f4ff;font-size:11px;font-weight:600;flex:1">'+v.n+'</span>'
-      +'<span style="color:'+c+';font-size:11px;font-family:monospace;font-weight:700;margin-right:4px">'+v.val+v.unit+'</span>'
-      +'<span style="color:'+c+';font-size:10px;margin-right:5px">'+pct+'%</span>'
-      +'<span style="font-size:11px">'+vitBadge(pct)+'</span>'
-      +'<span style="color:'+c+';font-size:9px;margin-left:3px">'+vitLabel(pct)+'</span>'
-      +'</div>';
-  });
-  var avgVit=vits.reduce(function(a,v){return a+(v.lim>0?Math.round(v.val/v.lim*100):0);},0)/vits.length;
-  vitHtml+='<div style="color:#8b92a8;font-size:10px;margin-top:8px;padding-top:8px;border-top:1px solid #2a2d3a">'
-    +(avgVit>=15?'✅ Good vitamin contribution!':avgVit>=5?'⚠️ Low vitamins — add vitamin-rich sides.':'❌ Very low vitamins — ensure balanced meals.')
-    +'</div>';
-  document.getElementById('rVitamins').innerHTML=vitHtml;
-
-  // REALITY CHECK
-  var rRows=[
-    {lbl:'🍬 Total Sugar', orig:(r.totalSug||r.sugar)+'g', rev:r.rSug+'g',   origV:r.totalSug||r.sugar, revV:r.rSug,  alertT:15, watchT:8,  zero:(r.totalSug||r.sugar)===0},
-    {lbl:'🍭 Added Sugar', orig:r.sugar+'g',  rev:r.rAsug+'g', origV:r.sugar, revV:r.rAsug, alertT:10, watchT:5,  zero:r.sugar===0},
-    {lbl:'🧂 Sodium',      orig:r.sodium+'mg',rev:r.rSod+'mg', origV:r.sodium,revV:r.rSod,  alertT:400,watchT:200, zero:r.sodium===0},
-    {lbl:'💪 Protein',     orig:r.prot+'g',  rev:r.rPro+'g',  origV:r.prot,  revV:r.rPro,  isPro:true},
-    {lbl:'🔥 Calories',    orig:r.cals+' kcal',rev:r.rCal+' kcal',origV:r.cals,revV:r.rCal,alertT:350,watchT:200},
-    {lbl:'🧈 Sat Fat',     orig:r.satf+'g',  rev:r.rSat+'g',  origV:r.satf,  revV:r.rSat,  alertT:4,  watchT:2,  zero:r.satf===0},
-    {lbl:'🍞 Carbs',       orig:r.carb+'g',  rev:r.rCarb+'g', origV:r.carb,  revV:r.rCarb, alertT:50, watchT:30},
-  ];
-  var tHtml='';
-  rRows.forEach(function(row){
-    var ol=row.isPro?rlvlPro(row.origV):rlvl(row.origV,row.alertT,row.watchT);
-    var rl=row.isPro?rlvlPro(row.revV):rlvl(row.revV,row.alertT,row.watchT);
-    var changed=ol!==rl;
-    var zNote=row.zero?' ⚠️':'';
-    tHtml+='<tr style="background:'+(changed?'#1c1510':'transparent')+'">'
-      +'<td>'+row.lbl+'</td>'
-      +'<td style="color:'+rlc(ol)+'">'+row.orig+'</td>'
-      +'<td style="color:'+rlc(rl)+'">'+row.rev+zNote+(changed?' ⬆':'')+'</td>'
-      +'<td style="color:'+rlc(rl)+'">'+rlvlTag(rl,row.isPro)+'</td>'
-      +'</tr>';
-  });
-  var hasZero=r.sugar===0||r.sodium===0||r.satf===0;
-  if(hasZero)tHtml+='<tr><td colspan="4" style="color:#f59e0b;font-size:9px;padding:7px 5px;line-height:1.5">* "0" on label may legally contain up to 0.49g (fat/sugar) or trace sodium per serving (FDA rounding rule).</td></tr>';
-  document.getElementById('rRealityRows').innerHTML=tHtml;
-
-  // REVISED RECOMMENDATION
-  var rKidsOk=!r.rKidSkip;var rAdultOk=!r.rAdultSkip;
-  var bothOk=rKidsOk&&rAdultOk;
-  var rb=document.getElementById('revisedCard');
-  rb.style.background=bothOk?'#16271e':'#1a1a10';
-  rb.style.border='1.5px solid '+(bothOk?'#22c55e55':'#f59e0b55');
-
-  var revHtml='<div style="font-family:'Bebas Neue',cursive;font-size:15px;letter-spacing:2px;color:'+(bothOk?'#22c55e':'#f59e0b')+';margin-bottom:8px">📋 REVISED RECOMMENDATION</div>';
-  revHtml+='<div style="display:flex;flex-direction:column;gap:6px">';
-  revHtml+='<div style="display:flex;align-items:center;gap:8px"><span style="font-size:18px">'+(rKidsOk?'✅':'⚠️')+'</span>'
-    +'<div><div style="font-family:'Bebas Neue',cursive;font-size:13px;color:'+(rKidsOk?'#22c55e':'#f59e0b')+'">👧 KIDS: '+(rKidsOk?'STILL GOOD':'CAUTION AT +20%')+'</div>'
-    +'<div style="color:#8b92a8;font-size:10px">'+(rKidsOk?'Within safe limits even at worst-case estimate.':'Crosses unsafe threshold at +20% variance.')+'</div></div></div>';
-  revHtml+='<div style="display:flex;align-items:center;gap:8px"><span style="font-size:18px">'+(rAdultOk?'✅':'⚠️')+'</span>'
-    +'<div><div style="font-family:'Bebas Neue',cursive;font-size:13px;color:'+(rAdultOk?'#22c55e':'#f59e0b')+'">👨 ADULTS: '+(rAdultOk?'STILL GOOD':'WATCH INTAKE')+'</div>'
-    +'<div style="color:#8b92a8;font-size:10px">'+(rAdultOk?'Within healthy adult limits at worst-case estimate.':'High values confirmed. Moderate portions.')+'</div></div></div>';
-
-  // Watch notes
-  var watches=[];
-  if(r.sodium===0)watches.push('💡 Sodium shows 0mg but may contain up to 50mg per serving.');
-  if(r.sugar===0)watches.push('💡 Sugar shows 0g but may contain up to 0.4g per serving.');
-  if(r.satf===0)watches.push('💡 Sat fat shows 0g but may contain up to 0.4g per serving.');
-  if(r.rSod>200)watches.push('💡 Realistic sodium: up to '+r.rSod+'mg ('+Math.round(r.rSod/1200*100)+'% child daily limit).');
-  if(r.rPro<4)watches.push('💡 Realistic protein: as low as '+r.rPro+'g — pair with protein-rich food.');
-  if(watches.length){
-    revHtml+='<div style="margin-top:6px;padding-top:6px;border-top:1px solid #ffffff11">';
-    watches.forEach(function(w){revHtml+='<div style="color:#8b92a8;font-size:10px;margin-bottom:3px;line-height:1.4">'+w+'</div>';});
-    revHtml+='</div>';
-  }
-  revHtml+='</div>';
-  document.getElementById('rRevisedContent').innerHTML=revHtml;
 
   // Log scan
   logScan(r,n,'scanned');
