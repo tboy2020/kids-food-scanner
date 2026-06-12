@@ -527,9 +527,7 @@ function loadKey(){
   }
 }
 
-function getKey(){
-  var k = '';
-  try { k = localStorage.getItem('kfs_apikey') || ''; } catch(e) {}
+// getKey defined above catch(e) {}
   return k || window._apiKeyFallback || '';
 }
 
@@ -574,10 +572,7 @@ function trySaveKey(){
 
 // Save on every keystroke after debounce
 var _saveTimer=null;
-function onKeyInput(val){
-  var st=document.getElementById('keyStatus');
-  if(val.length<5){
-    if(st){st.style.color='#8b92a8';st.textContent='Paste your full API key above';}
+// onKeyInput defined above
     return;
   }
   if(val.startsWith('sk-')){
@@ -589,13 +584,11 @@ function onKeyInput(val){
   _saveTimer=setTimeout(function(){trySaveKey();},1000);
 }
 
-function doSave(){trySaveKey();}
-function formSaveKey(){trySaveKey();}
-function saveKey(){trySaveKey();}
+// doSave defined above
+// formSaveKey defined above
+// saveKey defined above
 
-function doChange(){
-  window._apiKeyFallback=null;
-  try{localStorage.removeItem('kfs_apikey');}catch(e){}
+// doChange defined abovecatch(e){}
   var inp=document.getElementById('apiKeyInput');
   if(inp){inp.value='';inp.style.display='block';}
   var desc=document.getElementById('apiDesc');
@@ -605,8 +598,8 @@ function doChange(){
   document.getElementById('keySaved').style.display='none';
   document.getElementById('keyChange').style.display='none';
 }
-function changeKey(){doChange();}
-function changeKey(){doChange();}
+// changeKey defined above
+// changeKey defined above
 
 /* ══ IMAGE ══ */
 function onFile(inp){
