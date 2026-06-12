@@ -1481,6 +1481,9 @@ function resetAll(){
 // INIT
 // ══════════════════════════════════════════
 document.addEventListener('DOMContentLoaded',function(){
+  // Test JS is running
+  document.getElementById('keyStatus').textContent='✅ JS loaded! Tap SAVE now.';
+  document.getElementById('keyStatus').style.color='#22c55e';
   // Nav
   document.getElementById('nav-scanner').addEventListener('click',function(){switchScreen('screenScanner');});
   document.getElementById('nav-dash').addEventListener('click',function(){switchScreen('screenDash');});
