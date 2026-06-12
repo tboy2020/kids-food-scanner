@@ -1111,9 +1111,11 @@ setInterval(function(){
   }
 },1000);
 
-// Register service worker for PWA
+// Unregister any service workers - they were causing caching issues
 if('serviceWorker' in navigator){
-  navigator.serviceWorker.register('./sw.js').catch(function(){});
+  navigator.serviceWorker.getRegistrations().then(function(regs){
+    regs.forEach(function(r){r.unregister();});
+  });
 }
 
 loadKey();
