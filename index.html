@@ -234,11 +234,11 @@ select{width:100%;padding:12px;background:#0f1117;border:1.5px solid #2a2d3a;bor
   </div>
 
   <!-- Upload -->
-  <div class="upload-zone" id="dropZone" style="display:none;position:relative;z-index:20" onclick="document.getElementById('fileIn').click()">
+  <label for="fileIn" id="dropZone" class="upload-zone" style="display:none;position:relative;z-index:20;cursor:pointer;display:none">
     <div style="font-size:36px;margin-bottom:7px">📷</div>
     <div style="color:#f0f4ff;font-weight:600;font-size:14px">Tap to snap or upload</div>
     <div style="color:#8b92a8;font-size:11px;margin-top:2px">Photo of a nutrition label</div>
-  </div>
+  </label>
   <input type="file" id="fileIn" accept="image/*" capture="environment" style="display:none" onchange="onFile(this)"/>
   <div class="status-bar" id="statusBar"></div>
   <button type="button" class="analyze-btn" id="btnAnalyze" onclick="analyze()">ANALYZE 🔍</button>
@@ -603,7 +603,7 @@ function refreshKeyUI(){
     if(st)st.textContent='';
     if(wc)wc.style.display='block';
     if(mc)mc.style.display='block';
-    if(dz)dz.style.display='block';
+    if(dz)dz.style.display='flex';
   } else {
     inp.style.display='block';btn.style.display='block';
     saved.style.display='none';change.style.display='none';
@@ -714,7 +714,9 @@ function onFile(inp){
     var url=e.target.result;
     var dz=document.getElementById('dropZone');
     dz.className='upload-zone has-img';
-    dz.innerHTML='<img src="'+url+'" alt="label"/>';
+    dz.style.display='block';
+    dz.style.padding='0';
+    dz.innerHTML='<img src="'+url+'" alt="label" style="width:100%;max-height:240px;object-fit:cover;display:block"/>';
     setStatus('Compressing...');
     compressToBase64(url,900,0.65,function(b64){
       _b64=b64;var kb=Math.round(b64.length*0.75/1024);
