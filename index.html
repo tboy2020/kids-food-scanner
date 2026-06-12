@@ -215,13 +215,13 @@ select{width:100%;padding:12px;background:#0f1117;border:1.5px solid #2a2d3a;bor
   </div>
 
   <!-- Who is eating? -->
-  <div class="card" id="whoCard" style="position:relative;z-index:10">
+  <div class="card" id="whoCard" style="position:relative;z-index:10;display:none">
     <div class="card-title">👨‍👩‍👧‍👦 WHO IS EATING?</div>
     <div class="who-row" id="whoRow"></div>
   </div>
 
   <!-- Which meal? -->
-  <div class="card" id="mealCard" style="position:relative;z-index:10">
+  <div class="card" id="mealCard" style="position:relative;z-index:10;display:none">
     <div class="card-title">🍽️ WHICH MEAL?</div>
     <div class="meal-row" id="mealRow">
       <div class="meal-chip" data-meal="breakfast">🌅 Breakfast</div>
@@ -234,7 +234,7 @@ select{width:100%;padding:12px;background:#0f1117;border:1.5px solid #2a2d3a;bor
   </div>
 
   <!-- Upload -->
-  <div class="upload-zone" id="dropZone">
+  <div class="upload-zone" id="dropZone" style="display:none">
     <div style="font-size:36px;margin-bottom:7px">📷</div>
     <div style="color:#f0f4ff;font-weight:600;font-size:14px">Tap to snap or upload</div>
     <div style="color:#8b92a8;font-size:11px;margin-top:2px">Photo of a nutrition label</div>
@@ -581,13 +581,22 @@ function refreshKeyUI(){
   var saved=document.getElementById('keySaved');
   var change=document.getElementById('keyChange');
   var st=document.getElementById('keyStatus');
+  var wc=document.getElementById('whoCard');
+  var mc=document.getElementById('mealCard');
+  var dz=document.getElementById('dropZone');
   if(k&&k.length>10){
     inp.style.display='none';btn.style.display='none';
     saved.style.display='block';change.style.display='block';
     if(st)st.textContent='';
+    if(wc)wc.style.display='block';
+    if(mc)mc.style.display='block';
+    if(dz)dz.style.display='block';
   } else {
     inp.style.display='block';btn.style.display='block';
     saved.style.display='none';change.style.display='none';
+    if(wc)wc.style.display='none';
+    if(mc)mc.style.display='none';
+    if(dz)dz.style.display='none';
   }
 }
 function doSaveKey(){
@@ -595,6 +604,13 @@ function doSaveKey(){
   var st=document.getElementById('keyStatus');
   if(k.length<10){if(st){st.style.color='#ef4444';st.textContent='Too short. Paste full key.';}return;}
   setKey(k);refreshKeyUI();
+  // Show the rest of the scanner now
+  var wc=document.getElementById('whoCard');
+  var mc=document.getElementById('mealCard');
+  var dz=document.getElementById('dropZone');
+  if(wc)wc.style.display='block';
+  if(mc)mc.style.display='block';
+  if(dz)dz.style.display='block';
   var sks=document.getElementById('settingsKeyStatus');
   if(sks)sks.textContent='Key saved ✅';
 }
