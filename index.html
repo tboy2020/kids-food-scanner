@@ -214,7 +214,7 @@ body{background:#0f1117;font-family:'DM Sans',sans-serif;min-height:100vh;paddin
     <div class="setup-title">🔑 API KEY REQUIRED</div>
     <div style="color:#8b92a8;font-size:11px;margin-bottom:10px">Enter your Anthropic API key.<br/><a href="https://console.anthropic.com" target="_blank" style="color:#6ee7f7">console.anthropic.com</a></div>
     <input id="apiKeyInput" type="text" placeholder="sk-ant-api03-..." autocapitalize="none" autocorrect="off" autocomplete="off" spellcheck="false" style="width:100%;padding:12px;background:#0f1117;border:2px solid #6ee7f7;border-radius:8px;color:#f0f4ff;font-size:12px;font-family:monospace;box-sizing:border-box;display:block;margin-bottom:10px"/>
-    <div id="btnSave" ontouchstart="this.style.opacity='0.6'" ontouchend="this.style.opacity='1';doSave()" onmouseup="doSave()" style="width:100%;padding:18px;background:linear-gradient(135deg,#6ee7f7,#3b82f6);color:#0f1117;font-size:20px;font-family:'Bebas Neue',cursive;letter-spacing:3px;border-radius:10px;text-align:center;box-sizing:border-box;cursor:pointer;user-select:none;-webkit-user-select:none">SAVE API KEY ✓</div>
+    <div id="btnSave" ontouchstart="this.style.opacity='0.6'" ontouchend="this.style.opacity='1';window._btnTapped=true;doSave()" onmouseup="window._btnTapped=true;doSave()" onclick="window._btnTapped=true;doSave()" style="width:100%;padding:18px;background:linear-gradient(135deg,#6ee7f7,#3b82f6);color:#0f1117;font-size:20px;font-family:'Bebas Neue',cursive;letter-spacing:3px;border-radius:10px;text-align:center;box-sizing:border-box;cursor:pointer;user-select:none;-webkit-user-select:none">SAVE API KEY ✓</div>
     <div id="keyStatus" style="color:#8b92a8;font-size:12px;text-align:center;padding:8px 0;min-height:20px"></div>
     <div id="keySaved" style="display:none;background:#16271e;border:1px solid #22c55e55;border-radius:10px;color:#22c55e;font-size:13px;text-align:center;padding:12px;font-weight:700;margin-top:8px">✅ Key saved! Tap the camera to start scanning.</div>
     <div id="keyChange" style="display:none;color:#8b92a8;font-size:11px;text-align:center;padding:6px 0;cursor:pointer;text-decoration:underline;margin-top:4px" ontouchend="doChange()" onmouseup="doChange()">Change API key</div>
@@ -492,16 +492,22 @@ function doSave(){
   var inp=document.getElementById('apiKeyInput');
   var st=document.getElementById('keyStatus');
   var k=inp?inp.value.trim():'';
+  if(st){st.style.color='#6ee7f7';st.textContent='Saving...';}
   if(k.length<10){
-    if(st){st.style.color='#ef4444';st.textContent='Too short. Paste full key.';}
+    if(st){st.style.color='#ef4444';st.textContent='Key too short ('+k.length+' chars). Paste full key.';}
     return;
   }
   window._apiKeyFallback=k;
-  try{localStorage.setItem('kfs_apikey',k);}catch(e){}
+  try{localStorage.setItem('kfs_apikey',k);}catch(e){
+    if(st)st.textContent+=' [storage blocked]';
+  }
   if(inp)inp.style.display='none';
-  document.getElementById('btnSave').style.display='none';
-  document.getElementById('keySaved').style.display='block';
-  document.getElementById('keyChange').style.display='block';
+  var btn=document.getElementById('btnSave');
+  if(btn)btn.style.display='none';
+  var saved=document.getElementById('keySaved');
+  if(saved)saved.style.display='block';
+  var change=document.getElementById('keyChange');
+  if(change)change.style.display='block';
   if(st)st.textContent='';
 }
 function doChange(){
