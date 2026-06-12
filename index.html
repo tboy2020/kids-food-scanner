@@ -224,24 +224,24 @@ select{width:100%;padding:12px;background:#0f1117;border:1.5px solid #2a2d3a;bor
   <div class="card" id="mealCard" style="position:relative;z-index:10;display:none">
     <div class="card-title">🍽️ WHICH MEAL?</div>
     <div class="meal-row" id="mealRow">
-      <div class="meal-chip" data-meal="breakfast">🌅 Breakfast</div>
-      <div class="meal-chip" data-meal="morningSnack">🍎 Morning Snack</div>
-      <div class="meal-chip" data-meal="lunch">🍽️ Lunch</div>
-      <div class="meal-chip" data-meal="afternoonSnack">🍪 Afternoon Snack</div>
-      <div class="meal-chip" data-meal="dinner">🌙 Dinner</div>
-      <div class="meal-chip" data-meal="eveningSnack">🌃 Evening Snack</div>
+      <div class="meal-chip" data-meal="breakfast" onclick="selectMeal(this,'breakfast')">🌅 Breakfast</div>
+      <div class="meal-chip" data-meal="morningSnack" onclick="selectMeal(this,'morningSnack')">🍎 Morning Snack</div>
+      <div class="meal-chip" data-meal="lunch" onclick="selectMeal(this,'lunch')">🍽️ Lunch</div>
+      <div class="meal-chip" data-meal="afternoonSnack" onclick="selectMeal(this,'afternoonSnack')">🍪 Afternoon Snack</div>
+      <div class="meal-chip" data-meal="dinner" onclick="selectMeal(this,'dinner')">🌙 Dinner</div>
+      <div class="meal-chip" data-meal="eveningSnack" onclick="selectMeal(this,'eveningSnack')">🌃 Evening Snack</div>
     </div>
   </div>
 
   <!-- Upload -->
-  <div class="upload-zone" id="dropZone" style="display:none">
+  <div class="upload-zone" id="dropZone" style="display:none;position:relative;z-index:20" onclick="document.getElementById('fileIn').click()">
     <div style="font-size:36px;margin-bottom:7px">📷</div>
     <div style="color:#f0f4ff;font-weight:600;font-size:14px">Tap to snap or upload</div>
     <div style="color:#8b92a8;font-size:11px;margin-top:2px">Photo of a nutrition label</div>
   </div>
-  <input type="file" id="fileIn" accept="image/*" capture="environment" style="display:none"/>
+  <input type="file" id="fileIn" accept="image/*" capture="environment" style="display:none" onchange="onFile(this)"/>
   <div class="status-bar" id="statusBar"></div>
-  <button type="button" class="analyze-btn" id="btnAnalyze">ANALYZE 🔍</button>
+  <button type="button" class="analyze-btn" id="btnAnalyze" onclick="analyze()">ANALYZE 🔍</button>
   <div class="error-box" id="errBox"></div>
 
   <!-- RESULTS -->
@@ -271,25 +271,25 @@ select{width:100%;padding:12px;background:#0f1117;border:1.5px solid #2a2d3a;bor
 
     <!-- Mode Toggle -->
     <div class="mode-toggle">
-      <button type="button" class="mode-btn considering active" id="modeConsidering">🤔 CONSIDERING</button>
-      <button type="button" class="mode-btn ate" id="modeAte">✅ IF YOU ATE THIS</button>
+      <button type="button" class="mode-btn considering active" id="modeConsidering" onclick="_curMode='considering';if(_curResult)renderResults(_curResult,_curServings)">🤔 CONSIDERING</button>
+      <button type="button" class="mode-btn ate" id="modeAte" onclick="_curMode='ate';if(_curResult)renderResults(_curResult,_curServings)">✅ IF YOU ATE THIS</button>
     </div>
 
     <!-- Serving Adjuster -->
     <div class="adj-row">
-      <button type="button" class="adj-btn" id="adjMinus">−</button>
+      <button type="button" class="adj-btn" id="adjMinus" onclick="if(_curServings>1){_curServings--;updateServingDisplay();}">−</button>
       <div class="adj-display">
         <div class="adj-count" id="adjCount">1</div>
         <div class="adj-unit" id="adjUnit">serving</div>
         <div class="adj-grams" id="adjGrams"></div>
       </div>
-      <button type="button" class="adj-btn" id="adjPlus">+</button>
+      <button type="button" class="adj-btn" id="adjPlus" onclick="if(_curServings<8){_curServings++;updateServingDisplay();}">+</button>
     </div>
 
     <!-- Action Buttons -->
     <div class="action-row" id="actionRow">
-      <button type="button" class="btn-ate" id="btnAte">✅ WE ATE THIS</button>
-      <button type="button" class="btn-browse" id="btnBrowse">👀 JUST BROWSING</button>
+      <button type="button" class="btn-ate" id="btnAte" onclick="confirmAte()">✅ WE ATE THIS</button>
+      <button type="button" class="btn-browse" id="btnBrowse" onclick="document.getElementById('actionRow').style.display='none';var cb=document.getElementById('confirmBox');cb.style.display='block';cb.style.background='#1c1a10';cb.style.border='1px solid #f59e0b44';cb.style.color='#f59e0b';cb.textContent='👀 Just browsing — not added to tracker.'">👀 JUST BROWSING</button>
     </div>
     <div class="confirm-box" id="confirmBox"></div>
 
@@ -329,7 +329,7 @@ select{width:100%;padding:12px;background:#0f1117;border:1.5px solid #2a2d3a;bor
       <div id="rSuggestions"></div>
     </div>
 
-    <button type="button" class="scan-again" id="btnAgain">📷 Scan Another Product</button>
+    <button type="button" class="scan-again" id="btnAgain" onclick="resetAll()">📷 Scan Another Product</button>
   </div>
 </div>
 
@@ -599,6 +599,12 @@ function refreshKeyUI(){
     if(dz)dz.style.display='none';
   }
 }
+function selectMeal(el,meal){
+  _curMeal=meal;
+  document.querySelectorAll('.meal-chip').forEach(function(c){c.classList.remove('selected');});
+  el.classList.add('selected');
+}
+
 function doSaveKey(){
   var k=document.getElementById('apiKeyInput').value.trim();
   var st=document.getElementById('keyStatus');
