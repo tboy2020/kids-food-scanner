@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!DOCTYPE html><!-- v2_165947 -->
 <html lang="en">
 <head>
 <meta charset="UTF-8"/>
@@ -103,7 +103,7 @@ input[type=text]{width:100%;padding:14px;background:#0f1117;border:2px solid #6e
     <div class="card-title">🔑 API KEY REQUIRED</div>
     <p style="color:#8b92a8;font-size:11px;margin-bottom:10px">Enter your Anthropic API key.<br/><a href="https://console.anthropic.com" target="_blank" style="color:#6ee7f7">console.anthropic.com</a></p>
     <input type="text" id="apiKeyInput" placeholder="sk-ant-api03-..." autocapitalize="none" autocorrect="off" autocomplete="off" spellcheck="false"/>
-    <button type="button" class="big-btn" id="btnSave">SAVE API KEY</button>
+    <button type="button" class="big-btn" id="btnSave" onclick="saveAPIKey()">SAVE API KEY</button>
     <p class="status" id="keyStatus"></p>
     <div class="saved-box" id="keySaved">✅ Key saved! Tap the camera to start scanning.</div>
     <p class="change-link" id="keyChange">Change API key</p>
