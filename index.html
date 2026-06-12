@@ -211,7 +211,7 @@ select{width:100%;padding:12px;background:#0f1117;border:1.5px solid #2a2d3a;bor
     <button type="button" class="btn-primary" id="btnSaveKey" style="position:relative;z-index:51;touch-action:manipulation" onclick="var k=document.getElementById('apiKeyInput').value.trim();if(k.length>10){try{window._kfsKey=k;try{localStorage.setItem('kfs_key',k);localStorage.setItem('kfs_apikey',k);}catch(e){}}catch(e){}document.getElementById('apiKeyInput').style.display='none';this.style.display='none';document.getElementById('keySaved').style.display='block';document.getElementById('keyChange').style.display='block';var wc=document.getElementById('whoCard');var mc=document.getElementById('mealCard');var dz=document.getElementById('dropZone');if(wc)wc.style.display='block';if(mc)mc.style.display='block';if(dz)dz.style.display='block';}else{document.getElementById('keyStatus').textContent='Too short. Paste full key.';document.getElementById('keyStatus').style.color='#ef4444';}">SAVE API KEY</button>
     <p style="color:#8b92a8;font-size:11px;text-align:center;padding:6px 0;min-height:18px;position:relative;z-index:51" id="keyStatus"></p>
     <div class="key-saved-box" id="keySaved" style="position:relative;z-index:51">✅ Key saved! Ready to scan.</div>
-    <p class="key-change-link" id="keyChange" style="position:relative;z-index:51">Change API key</p>
+    <p class="key-change-link" id="keyChange" style="position:relative;z-index:51;cursor:pointer" onclick="document.getElementById('apiKeyInput').style.display='block';document.getElementById('btnSaveKey').style.display='block';document.getElementById('keySaved').style.display='none';this.style.display='none';document.getElementById('apiKeyInput').value=getKey();">Change API key</p>
   </div>
 
   <!-- Who is eating? -->
@@ -352,7 +352,7 @@ select{width:100%;padding:12px;background:#0f1117;border:1.5px solid #2a2d3a;bor
     <div class="card-title">🔑 API KEY</div>
     <div style="display:flex;justify-content:space-between;align-items:center">
       <div><div style="color:#f0f4ff;font-size:12px;font-weight:600">Anthropic Key</div><div style="color:#8b92a8;font-size:10px" id="settingsKeyStatus">Not saved</div></div>
-      <button type="button" id="btnChangeKeySettings" style="background:transparent;border:1px solid #2a2d3a;color:#6ee7f7;border-radius:6px;padding:6px 12px;font-size:11px;cursor:pointer;font-family:'DM Sans',sans-serif">Change</button>
+      <button type="button" id="btnChangeKeySettings" onclick="doChangeKey();switchScreen('screenScanner')" style="background:transparent;border:1px solid #2a2d3a;color:#6ee7f7;border-radius:6px;padding:6px 12px;font-size:11px;cursor:pointer;font-family:'DM Sans',sans-serif">Change</button>
     </div>
   </div>
 
@@ -362,12 +362,12 @@ select{width:100%;padding:12px;background:#0f1117;border:1.5px solid #2a2d3a;bor
     <div class="setting-section">
       <div class="setting-section-title">FAMILY NAME</div>
       <input type="text" id="familyNameInput" placeholder="e.g. Taiwo Family" style="margin-bottom:8px"/>
-      <button type="button" class="btn-primary" id="btnSaveFamilyName" style="font-size:14px;padding:10px">SAVE NAME</button>
+      <button type="button" class="btn-primary" id="btnSaveFamilyName" onclick="var s=getSettings();s.familyName=document.getElementById('familyNameInput').value.trim();saveSettings(s);var sub=document.getElementById('familyNameSub');if(sub&&s.familyName)sub.textContent=s.familyName+' · Snap · Analyze · Track';" style="font-size:14px;padding:10px">SAVE NAME</button>
     </div>
     <div class="setting-section">
       <div class="setting-section-title">FAMILY MEMBERS</div>
       <div id="membersList"></div>
-      <button type="button" id="btnAddMember" style="width:100%;padding:10px;border-radius:9px;border:1.5px dashed #2a3a5a;background:transparent;color:#6ee7f7;font-size:12px;cursor:pointer;font-family:'DM Sans',sans-serif;margin-top:8px">+ Add Family Member</button>
+      <button type="button" id="btnAddMember" onclick="document.getElementById('addMemberForm').style.display='block';this.style.display='none'" style="width:100%;padding:10px;border-radius:9px;border:1.5px dashed #2a3a5a;background:transparent;color:#6ee7f7;font-size:12px;cursor:pointer;font-family:'DM Sans',sans-serif;margin-top:8px">+ Add Family Member</button>
       <div class="add-member-form" id="addMemberForm">
         <div class="form-row"><label class="form-label">Name</label><input type="text" id="newMemberName" placeholder="e.g. Anu"/></div>
         <div class="form-row"><label class="form-label">Age</label><input type="number" id="newMemberAge" placeholder="e.g. 5" min="1" max="99"/></div>
@@ -378,8 +378,8 @@ select{width:100%;padding:12px;background:#0f1117;border:1.5px solid #2a2d3a;bor
           </select>
         </div>
         <div style="display:flex;gap:8px;margin-top:10px">
-          <button type="button" class="btn-primary" id="btnConfirmAddMember" style="font-size:14px;padding:10px;flex:2">ADD MEMBER</button>
-          <button type="button" class="btn-secondary" id="btnCancelAddMember" style="flex:1">Cancel</button>
+          <button type="button" class="btn-primary" id="btnConfirmAddMember" onclick="addMember()" style="font-size:14px;padding:10px;flex:2">ADD MEMBER</button>
+          <button type="button" class="btn-secondary" id="btnCancelAddMember" onclick="document.getElementById('addMemberForm').style.display='none';document.getElementById('btnAddMember').style.display='block'" style="flex:1">Cancel</button>
         </div>
       </div>
     </div>
@@ -388,19 +388,19 @@ select{width:100%;padding:12px;background:#0f1117;border:1.5px solid #2a2d3a;bor
   <!-- Food Preferences -->
   <div class="card">
     <div class="card-title">🥗 FOOD PREFERENCES</div>
-    <div class="setting-row"><div><div class="setting-label">Nigerian/African Foods</div><div class="setting-sub">Include in database & suggestions</div></div><div class="toggle on" id="togNigerian"></div></div>
-    <div class="setting-row"><div><div class="setting-label">Halal</div><div class="setting-sub">Filter non-halal suggestions</div></div><div class="toggle on" id="togHalal"></div></div>
-    <div class="setting-row"><div><div class="setting-label">Nut Allergy</div><div class="setting-sub">Avoid nut-containing suggestions</div></div><div class="toggle" id="togNutAllergy"></div></div>
-    <div class="setting-row"><div><div class="setting-label">Dairy Free</div><div class="setting-sub">Avoid dairy suggestions</div></div><div class="toggle" id="togDairyFree"></div></div>
+    <div class="setting-row"><div><div class="setting-label">Nigerian/African Foods</div><div class="setting-sub">Include in database & suggestions</div></div><div class="toggle on" id="togNigerian" onclick="var s=getSettings();s['nigerian']=!s['nigerian'];saveSettings(s);this.className='toggle'+(s['nigerian']?' on':'');"></div></div>
+    <div class="setting-row"><div><div class="setting-label">Halal</div><div class="setting-sub">Filter non-halal suggestions</div></div><div class="toggle on" id="togHalal" onclick="var s=getSettings();s['halal']=!s['halal'];saveSettings(s);this.className='toggle'+(s['halal']?' on':'');"></div></div>
+    <div class="setting-row"><div><div class="setting-label">Nut Allergy</div><div class="setting-sub">Avoid nut-containing suggestions</div></div><div class="toggle" id="togNutAllergy" onclick="var s=getSettings();s['nutAllergy']=!s['nutAllergy'];saveSettings(s);this.className='toggle'+(s['nutAllergy']?' on':'');"></div></div>
+    <div class="setting-row"><div><div class="setting-label">Dairy Free</div><div class="setting-sub">Avoid dairy suggestions</div></div><div class="toggle" id="togDairyFree" onclick="var s=getSettings();s['dairyFree']=!s['dairyFree'];saveSettings(s);this.className='toggle'+(s['dairyFree']?' on':'');"></div></div>
   </div>
 
   <!-- Scanner Preferences -->
   <div class="card">
     <div class="card-title">🔬 SCANNER</div>
-    <div class="setting-row"><div><div class="setting-label">Label Reality Check</div><div class="setting-sub">Show +20% FDA variance estimates</div></div><div class="toggle on" id="togReality"></div></div>
-    <div class="setting-row"><div><div class="setting-label">Scan Hidden Sugars</div><div class="setting-sub">Detect sugar aliases in ingredients</div></div><div class="toggle on" id="togSugar"></div></div>
-    <div class="setting-row"><div><div class="setting-label">Flag Additives</div><div class="setting-sub">Highlight processing chemicals</div></div><div class="toggle on" id="togAdditives"></div></div>
-    <div class="setting-row"><div><div class="setting-label">Auto-reset at Midnight</div><div class="setting-sub">Clear daily trackers each day</div></div><div class="toggle on" id="togReset"></div></div>
+    <div class="setting-row"><div><div class="setting-label">Label Reality Check</div><div class="setting-sub">Show +20% FDA variance estimates</div></div><div class="toggle on" id="togReality" onclick="var s=getSettings();s['reality']=!s['reality'];saveSettings(s);this.className='toggle'+(s['reality']?' on':'');"></div></div>
+    <div class="setting-row"><div><div class="setting-label">Scan Hidden Sugars</div><div class="setting-sub">Detect sugar aliases in ingredients</div></div><div class="toggle on" id="togSugar" onclick="var s=getSettings();s['sugar']=!s['sugar'];saveSettings(s);this.className='toggle'+(s['sugar']?' on':'');"></div></div>
+    <div class="setting-row"><div><div class="setting-label">Flag Additives</div><div class="setting-sub">Highlight processing chemicals</div></div><div class="toggle on" id="togAdditives" onclick="var s=getSettings();s['additives']=!s['additives'];saveSettings(s);this.className='toggle'+(s['additives']?' on':'');"></div></div>
+    <div class="setting-row"><div><div class="setting-label">Auto-reset at Midnight</div><div class="setting-sub">Clear daily trackers each day</div></div><div class="toggle on" id="togReset" onclick="var s=getSettings();s['reset']=!s['reset'];saveSettings(s);this.className='toggle'+(s['reset']?' on':'');"></div></div>
   </div>
 
   <!-- Daily Limits Reference -->
@@ -413,9 +413,9 @@ select{width:100%;padding:12px;background:#0f1117;border:1.5px solid #2a2d3a;bor
 
 <!-- NAV -->
 <div class="nav">
-  <button type="button" class="nav-btn active" id="nav-scanner"><span class="nav-ico">📷</span><span class="nav-lbl">Scanner</span></button>
-  <button type="button" class="nav-btn" id="nav-dash"><span class="nav-ico">📊</span><span class="nav-lbl">Dashboard</span></button>
-  <button type="button" class="nav-btn" id="nav-settings"><span class="nav-ico">⚙️</span><span class="nav-lbl">Settings</span></button>
+  <button type="button" class="nav-btn active" id="nav-scanner" onclick="switchScreen('screenScanner')"><span class="nav-ico">📷</span><span class="nav-lbl">Scanner</span></button>
+  <button type="button" class="nav-btn" id="nav-dash" onclick="switchScreen('screenDash')"><span class="nav-ico">📊</span><span class="nav-lbl">Dashboard</span></button>
+  <button type="button" class="nav-btn" id="nav-settings" onclick="switchScreen('screenSettings')"><span class="nav-ico">⚙️</span><span class="nav-lbl">Settings</span></button>
 </div>
 
 <script>
@@ -612,6 +612,21 @@ function refreshKeyUI(){
     if(dz)dz.style.display='none';
   }
 }
+function addMember(){
+  var name=document.getElementById('newMemberName').value.trim();
+  var age=document.getElementById('newMemberAge').value.trim();
+  var role=document.getElementById('newMemberRole').value;
+  if(!name||!age){alert('Please enter name and age.');return;}
+  var members=getMembers();
+  members.push({id:'m_'+Date.now(),name:name,age:parseInt(age),role:role,emoji:getEmoji(role,name)});
+  saveMembers(members);
+  document.getElementById('newMemberName').value='';
+  document.getElementById('newMemberAge').value='';
+  document.getElementById('addMemberForm').style.display='none';
+  document.getElementById('btnAddMember').style.display='block';
+  renderSettings();buildWhoRow();
+}
+
 function selectMeal(el,meal){
   _curMeal=meal;
   document.querySelectorAll('.meal-chip').forEach(function(c){c.classList.remove('selected');});
