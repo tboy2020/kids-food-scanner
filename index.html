@@ -1,4 +1,4 @@
-<!DOCTYPE html><!-- BUILD_20260623_125544 v6-1255 -->
+<!DOCTYPE html><!-- BUILD_20260623_130224 v7-1302 -->
 <html lang="en">
 <head>
 <meta charset="UTF-8"/>
@@ -91,7 +91,7 @@ input[type=text]{width:100%;padding:14px;background:#0f1117;border:2px solid #6e
 <div class="hdr">
   <div class="hdr-icon">🧒🍽️</div>
   <div class="hdr-title">KIDS FOOD SCANNER</div>
-  <div class="hdr-sub">Snap · Analyze · Track · Feed Smart<div id="buildTag" style="color:#3b82f6;font-size:9px;margin-top:3px;letter-spacing:1px">BUILD v6-1255</div></div>
+  <div class="hdr-sub">Snap · Analyze · Track · Feed Smart<div id="buildTag" style="color:#3b82f6;font-size:9px;margin-top:3px;letter-spacing:1px">BUILD v7-1302</div></div>
 </div>
 
 <!-- SCANNER SCREEN -->
@@ -131,7 +131,7 @@ input[type=text]{width:100%;padding:14px;background:#0f1117;border:2px solid #6e
       <div style="text-align:center">
         <div id="rRing" style="width:58px;height:58px;border-radius:50%;display:flex;align-items:center;justify-content:center">
           <div style="width:44px;height:44px;border-radius:50%;background:#1a1d27;display:flex;align-items:center;justify-content:center;flex-direction:column">
-            <span id="rScore" style="font-family:'Bebas Neue',cursive;font-size:16px;line-height:1"></span>
+            <span id="rScore" style="font-family:\'Bebas Neue\',cursive;font-size:16px;line-height:1"></span>
             <span style="color:#8b92a8;font-size:8px">/100</span>
           </div>
         </div>
@@ -163,7 +163,7 @@ input[type=text]{width:100%;padding:14px;background:#0f1117;border:2px solid #6e
 
     <!-- WHO ATE + WHICH MEAL -->
     <div class="card" style="margin-bottom:11px">
-      <div style="font-family:'Bebas Neue',cursive;font-size:13px;letter-spacing:2px;color:#6ee7f7;margin-bottom:8px">👨‍👩‍👧‍👦 WHO ATE THIS?</div>
+      <div style="font-family:\'Bebas Neue\',cursive;font-size:13px;letter-spacing:2px;color:#6ee7f7;margin-bottom:8px">👨‍👩‍👧‍👦 WHO ATE THIS?</div>
       <div class="who-row" id="whoRow">
         <div class="who-chip selected" onclick="selectWho(this,'everyone')">👨‍👩‍👧‍👦 Everyone</div>
         <div class="who-chip" onclick="selectWho(this,'anu')">👧 Anu</div>
@@ -171,7 +171,7 @@ input[type=text]{width:100%;padding:14px;background:#0f1117;border:2px solid #6e
         <div class="who-chip" onclick="selectWho(this,'taiwo')">👨 Pastor Taiwo</div>
         <div class="who-chip" onclick="selectWho(this,'vera')">👩 Vera</div>
       </div>
-      <div style="font-family:'Bebas Neue',cursive;font-size:13px;letter-spacing:2px;color:#6ee7f7;margin-bottom:8px;margin-top:10px">🍽️ WHICH MEAL?</div>
+      <div style="font-family:\'Bebas Neue\',cursive;font-size:13px;letter-spacing:2px;color:#6ee7f7;margin-bottom:8px;margin-top:10px">🍽️ WHICH MEAL?</div>
       <div class="meal-grid">
         <div class="meal-chip selected" onclick="selectMeal(this,'breakfast')">🌅 Breakfast</div>
         <div class="meal-chip" onclick="selectMeal(this,'morningSnack')">🍎 Morning Snack</div>
@@ -599,10 +599,10 @@ function renderResults(r,n){
   var rb=document.getElementById('revisedCard');
   rb.style.background=both?'#16271e':'#1a1a10';
   rb.style.border='1.5px solid '+(both?'#22c55e55':'#f59e0b55');
-  var rc='<div style="font-family:'Bebas Neue',cursive;font-size:15px;letter-spacing:2px;color:'+(both?'#22c55e':'#f59e0b')+';margin-bottom:8px">📋 REVISED RECOMMENDATION</div>';
+  var rc='<div style="font-family:\'Bebas Neue\',cursive;font-size:15px;letter-spacing:2px;color:'+(both?'#22c55e':'#f59e0b')+';margin-bottom:8px">📋 REVISED RECOMMENDATION</div>';
   rc+='<div style="display:flex;flex-direction:column;gap:6px">';
-  rc+='<div style="display:flex;align-items:center;gap:8px"><span style="font-size:18px">'+(rko?'✅':'⚠️')+'</span><div><div style="font-family:'Bebas Neue',cursive;font-size:13px;color:'+(rko?'#22c55e':'#f59e0b')+'">👧 KIDS: '+(rko?'STILL GOOD':'CAUTION AT +20%')+'</div><div style="color:#8b92a8;font-size:10px">'+(rko?'Safe even at worst-case +20%.':'May cross threshold at +20% variance.')+'</div></div></div>';
-  rc+='<div style="display:flex;align-items:center;gap:8px"><span style="font-size:18px">'+(rao?'✅':'⚠️')+'</span><div><div style="font-family:'Bebas Neue',cursive;font-size:13px;color:'+(rao?'#22c55e':'#f59e0b')+'">👨 ADULTS: '+(rao?'STILL GOOD':'WATCH INTAKE')+'</div><div style="color:#8b92a8;font-size:10px">'+(rao?'Within adult limits at worst-case.':'High values confirmed. Watch portions.')+'</div></div></div>';
+  rc+='<div style="display:flex;align-items:center;gap:8px"><span style="font-size:18px">'+(rko?'✅':'⚠️')+'</span><div><div style="font-family:\'Bebas Neue\',cursive;font-size:13px;color:'+(rko?'#22c55e':'#f59e0b')+'">👧 KIDS: '+(rko?'STILL GOOD':'CAUTION AT +20%')+'</div><div style="color:#8b92a8;font-size:10px">'+(rko?'Safe even at worst-case +20%.':'May cross threshold at +20% variance.')+'</div></div></div>';
+  rc+='<div style="display:flex;align-items:center;gap:8px"><span style="font-size:18px">'+(rao?'✅':'⚠️')+'</span><div><div style="font-family:\'Bebas Neue\',cursive;font-size:13px;color:'+(rao?'#22c55e':'#f59e0b')+'">👨 ADULTS: '+(rao?'STILL GOOD':'WATCH INTAKE')+'</div><div style="color:#8b92a8;font-size:10px">'+(rao?'Within adult limits at worst-case.':'High values confirmed. Watch portions.')+'</div></div></div>';
   var ws=[];
   if(r.sodium===0)ws.push('💡 0mg sodium may still contain up to 50mg (FDA rounding).');
   if(r.sugar===0)ws.push('💡 0g sugar may still contain up to 0.4g (FDA rounding).');
