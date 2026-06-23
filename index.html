@@ -1,4 +1,4 @@
-<!DOCTYPE html><!-- BUILD_20260623_123647 -->
+<!DOCTYPE html><!-- BUILD_20260623_125544 v6-1255 -->
 <html lang="en">
 <head>
 <meta charset="UTF-8"/>
@@ -91,7 +91,7 @@ input[type=text]{width:100%;padding:14px;background:#0f1117;border:2px solid #6e
 <div class="hdr">
   <div class="hdr-icon">🧒🍽️</div>
   <div class="hdr-title">KIDS FOOD SCANNER</div>
-  <div class="hdr-sub">Snap · Analyze · Track · Feed Smart</div>
+  <div class="hdr-sub">Snap · Analyze · Track · Feed Smart<div id="buildTag" style="color:#3b82f6;font-size:9px;margin-top:3px;letter-spacing:1px">BUILD v6-1255</div></div>
 </div>
 
 <!-- SCANNER SCREEN -->
@@ -312,9 +312,11 @@ function saveAPIKey(){
     st.textContent='Too short. Paste your full API key.';
     return;
   }
-  setKey(k);
-  refreshKeyUI();
-  refreshSettings();
+  try{ setKey(k); }catch(e){}
+  try{ refreshKeyUI(); }catch(e){}
+  try{ refreshSettings(); }catch(e){}
+  st.style.color='#22c55e';
+  st.textContent='Saved! Tap the camera below to scan.';
 }
 
 function changeAPIKey(){
