@@ -1,4 +1,4 @@
-<!DOCTYPE html><!-- BUILD_20260626_120350 v9-1203 -->
+<!DOCTYPE html><!-- BUILD_20260626_123435 v10-1234 -->
 <html lang="en">
 <head>
 <meta charset="UTF-8"/>
@@ -91,7 +91,7 @@ input[type=text]{width:100%;padding:14px;background:#0f1117;border:2px solid #6e
 <div class="hdr">
   <div class="hdr-icon">🧒🍽️</div>
   <div class="hdr-title">KIDS FOOD SCANNER</div>
-  <div class="hdr-sub">Snap · Analyze · Track · Feed Smart<div id="buildTag" style="color:#3b82f6;font-size:9px;margin-top:3px;letter-spacing:1px">BUILD v9-1203</div></div>
+  <div class="hdr-sub">Snap · Analyze · Track · Feed Smart<div id="buildTag" style="color:#3b82f6;font-size:9px;margin-top:3px;letter-spacing:1px">BUILD v10-1234</div></div>
 </div>
 
 <!-- SCANNER SCREEN -->
@@ -152,6 +152,7 @@ input[type=text]{width:100%;padding:14px;background:#0f1117;border:2px solid #6e
 
     <div class="action-row" id="actionRow">
       <button type="button" class="btn-ate" id="btnAte">✅ WE ATE THIS</button>
+      <button type="button" class="btn-plan" id="btnPlan" style="flex:1;padding:13px;border-radius:11px;border:1.5px solid #6ee7f7;background:transparent;color:#6ee7f7;font-family:\'Bebas Neue\',cursive;font-size:14px;letter-spacing:1px;cursor:pointer">📋 PLAN IT</button>
       <button type="button" class="btn-browse" id="btnBrowse">👀 JUST BROWSING</button>
     </div>
     <div id="ateMsg" style="display:none;background:#16271e;border:1px solid #22c55e44;border-radius:11px;padding:10px;margin-bottom:12px;color:#22c55e;font-size:12px;text-align:center"></div>
@@ -322,16 +323,46 @@ function setPrefs(p){try{localStorage.setItem('kfs_prefs',JSON.stringify(p));}ca
 function getDayData(){try{return JSON.parse(localStorage.getItem('kfs_day_'+today())||'{"sod":{},"sug":{},"fat":{},"carb":{},"scans":[]}');}catch(e){return {"sod":{},"sug":{},"fat":{},"carb":{},"scans":[]};}}
 function saveDayData(d){try{localStorage.setItem('kfs_day_'+today(),JSON.stringify(d));}catch(e){}}
 function today(){return new Date().toISOString().slice(0,10);}
-// ── PER-MEMBER DAILY LOG (v8) ──
-function getMemberLog(id){
+// ── PER-MEMBER DAY (v10): items-based, totals computed live ──
+function getMemberItems(id){
   try{
-    return JSON.parse(localStorage.getItem('kfs_mlog_'+id+'_'+today())||'null') ||
-      {cal:0,pro:0,sug:0,totalSug:0,sod:0,carb:0,sat:0,vitD:0,calcium:0,iron:0,pot:0,vitC:0,vitA:0,items:[]};
-  }catch(e){
-    return {cal:0,pro:0,sug:0,totalSug:0,sod:0,carb:0,sat:0,vitD:0,calcium:0,iron:0,pot:0,vitC:0,vitA:0,items:[]};
-  }
+    var raw=localStorage.getItem('kfs_items_'+id+'_'+today());
+    if(raw)return JSON.parse(raw);
+    // Migrate old v8/v9 log if present
+    var old=localStorage.getItem('kfs_mlog_'+id+'_'+today());
+    if(old){
+      var o=JSON.parse(old);
+      if(o&&o.items&&o.items.length){
+        var migrated=o.items.map(function(it){
+          return {prod:it.prod,serv:it.serv||1,meal:it.meal||'breakfast',status:'eaten',
+            cal:it.cal||0,pro:0,sug:it.sug||0,totalSug:it.sug||0,sod:it.sod||0,carb:0,sat:0,
+            vitD:0,calcium:0,iron:0,pot:0,vitC:0,vitA:0,
+            time:it.time||''};
+        });
+        return migrated;
+      }
+    }
+    return [];
+  }catch(e){return [];}
 }
-function saveMemberLog(id,log){try{localStorage.setItem('kfs_mlog_'+id+'_'+today(),JSON.stringify(log));}catch(e){}}
+function saveMemberItems(id,items){try{localStorage.setItem('kfs_items_'+id+'_'+today(),JSON.stringify(items));}catch(e){}}
+
+// Compute totals from a filtered item list
+function sumItems(items){
+  var t={cal:0,pro:0,sug:0,totalSug:0,sod:0,carb:0,sat:0,vitD:0,calcium:0,iron:0,pot:0,vitC:0,vitA:0};
+  items.forEach(function(it){
+    t.cal+=it.cal||0; t.pro+=it.pro||0; t.sug+=it.sug||0; t.totalSug+=it.totalSug||0;
+    t.sod+=it.sod||0; t.carb+=it.carb||0; t.sat+=it.sat||0;
+    t.vitD+=it.vitD||0; t.calcium+=it.calcium||0; t.iron+=it.iron||0;
+    t.pot+=it.pot||0; t.vitC+=it.vitC||0; t.vitA+=it.vitA||0;
+  });
+  // round
+  t.pro=+t.pro.toFixed(1); t.sug=+t.sug.toFixed(1); t.totalSug=+t.totalSug.toFixed(1);
+  t.sat=+t.sat.toFixed(1); t.iron=+t.iron.toFixed(1); t.vitD=+t.vitD.toFixed(1);
+  t.vitC=+t.vitC.toFixed(1); t.vitA=+t.vitA.toFixed(1);
+  t.cal=Math.round(t.cal); t.sod=Math.round(t.sod); t.carb=Math.round(t.carb); t.calcium=Math.round(t.calcium); t.pot=Math.round(t.pot);
+  return t;
+}
 function memberGroup(id){
   var m=FAMILY_MEMBERS.find(function(x){return x.id===id;});
   return m?m.group:'adult';
@@ -703,99 +734,152 @@ function logScan(r,n,status){
   saveDayData(d);
 }
 
+var _dashPerson='anu';
+
 function renderDashboard(){
   var box=document.getElementById('dashContent');
   if(!box)return;
-  var anyData=false;
   var html='';
+
+  // Person switcher
+  html+='<div style="display:flex;gap:6px;margin-bottom:12px;overflow-x:auto;padding-bottom:2px">';
   FAMILY_MEMBERS.forEach(function(m){
-    var log=getMemberLog(m.id);
-    var lim=MEMBER_LIMITS[m.group];
-    var hasData=log.items&&log.items.length>0;
-    if(hasData)anyData=true;
+    var on=_dashPerson===m.id;
+    html+='<button type="button" onclick="setDashPerson(\''+m.id+'\')" style="flex-shrink:0;padding:8px 14px;border-radius:99px;border:1.5px solid '+(on?'#6ee7f7':'#2a2d3a')+';background:'+(on?'#161c2a':'#1a1d27')+';color:'+(on?'#6ee7f7':'#8b92a8')+';font-size:12px;font-weight:600;cursor:pointer">'+m.emoji+' '+m.name+'</button>';
+  });
+  html+='</div>';
 
-    var sugP=Math.min(Math.round(log.sug/lim.sug*100),100);
-    var sodP=Math.min(Math.round(log.sod/lim.sod*100),100);
-    var worst=Math.max(sugP,sodP);
-    var col=worst>=80?'#ef4444':worst>=50?'#f59e0b':'#22c55e';
-    var verdict=!hasData?'No food logged yet':worst>=80?'⚠️ HIGH INTAKE':worst>=50?'👀 MODERATE':'✅ GREAT DAY';
+  var m=FAMILY_MEMBERS.find(function(x){return x.id===_dashPerson;});
+  var lim=MEMBER_LIMITS[m.group];
+  var items=getMemberItems(m.id);
+  var eaten=items.filter(function(it){return it.status==='eaten';});
+  var planned=items.filter(function(it){return it.status==='planned';});
+  var tEaten=sumItems(eaten);
+  var tAll=sumItems(items);
 
-    html+='<div style="background:#1a1d27;border-radius:13px;padding:13px 15px;margin-bottom:11px;border:1px solid #2a2d3a">';
-    html+='<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:'+(hasData?'10px':'0')+'">'
-      +'<div style="font-family:\'Bebas Neue\',cursive;font-size:16px;letter-spacing:2px;color:#6ee7f7">'+m.emoji+' '+m.name+'</div>'
-      +'<div style="font-family:\'Bebas Neue\',cursive;font-size:12px;letter-spacing:1px;color:'+col+'">'+verdict+'</div></div>';
+  // Summary card: Eaten vs Planned totals
+  html+='<div style="background:#1a1d27;border-radius:13px;padding:13px 15px;margin-bottom:11px;border:1px solid #2a2d3a">';
+  html+='<div style="font-family:\'Bebas Neue\',cursive;font-size:15px;letter-spacing:2px;color:#6ee7f7;margin-bottom:10px">'+m.emoji+' '+m.name+'\'S DAY</div>';
 
-    if(hasData){
-      // Macro bars
-      var macros=[
-        {e:'🍬',n:'Added Sugar',v:+log.sug.toFixed(1),lim:lim.sug,u:'g'},
-        {e:'🧂',n:'Sodium',v:Math.round(log.sod),lim:lim.sod,u:'mg'},
-        {e:'💪',n:'Protein',v:+log.pro.toFixed(1),lim:lim.pro,u:'g',pro:true},
-        {e:'🔥',n:'Calories',v:Math.round(log.cal),lim:lim.cal,u:' kcal'},
-        {e:'🦴',n:'Calcium',v:Math.round(log.calcium),lim:lim.calcium,u:'mg',vit:true},
-        {e:'⚡',n:'Iron',v:+log.iron.toFixed(1),lim:lim.iron,u:'mg',vit:true}
-      ];
-      macros.forEach(function(x){
-        var p=Math.min(Math.round(x.v/x.lim*100),100);
-        var cc;
-        if(x.pro){ cc=x.v>=x.lim*0.5?'#22c55e':x.v>=x.lim*0.25?'#f59e0b':'#ef4444'; }
-        else if(x.vit){ cc=p>=50?'#22c55e':p>=20?'#f59e0b':'#ef4444'; }
-        else { cc=p>=80?'#ef4444':p>=50?'#f59e0b':'#22c55e'; }
-        var remain=x.lim-x.v;
-        html+='<div style="margin-bottom:9px"><div style="display:flex;justify-content:space-between;margin-bottom:3px">'
-          +'<span style="color:#f0f4ff;font-size:11px;font-weight:600">'+x.e+' '+x.n+'</span>'
-          +'<span style="color:'+cc+';font-size:11px;font-family:monospace;font-weight:700">'+x.v+'/'+x.lim+x.u+' ('+p+'%)</span></div>'
-          +'<div style="background:#2a2d3a;border-radius:99px;height:6px;overflow:hidden"><div style="width:'+p+'%;height:100%;border-radius:99px;background:'+cc+'"></div></div></div>';
+  var rows=[
+    {e:'🍬',n:'Added Sugar',eaten:tEaten.sug,all:tAll.sug,lim:lim.sug,u:'g'},
+    {e:'🧂',n:'Sodium',eaten:tEaten.sod,all:tAll.sod,lim:lim.sod,u:'mg'},
+    {e:'💪',n:'Protein',eaten:tEaten.pro,all:tAll.pro,lim:lim.pro,u:'g',pro:true},
+    {e:'🔥',n:'Calories',eaten:tEaten.cal,all:tAll.cal,lim:lim.cal,u:''},
+    {e:'🦴',n:'Calcium',eaten:tEaten.calcium,all:tAll.calcium,lim:lim.calcium,u:'mg',vit:true},
+    {e:'⚡',n:'Iron',eaten:tEaten.iron,all:tAll.iron,lim:lim.iron,u:'mg',vit:true}
+  ];
+  rows.forEach(function(x){
+    var pe=Math.min(Math.round(x.eaten/x.lim*100),100);
+    var pa=Math.min(Math.round(x.all/x.lim*100),100);
+    var cc;
+    if(x.pro){cc=x.eaten>=x.lim*0.5?'#22c55e':x.eaten>=x.lim*0.25?'#f59e0b':'#ef4444';}
+    else if(x.vit){cc=pe>=50?'#22c55e':pe>=20?'#f59e0b':'#ef4444';}
+    else{cc=pe>=80?'#ef4444':pe>=50?'#f59e0b':'#22c55e';}
+    html+='<div style="margin-bottom:9px"><div style="display:flex;justify-content:space-between;margin-bottom:3px">'
+      +'<span style="color:#f0f4ff;font-size:11px;font-weight:600">'+x.e+' '+x.n+'</span>'
+      +'<span style="font-size:11px;font-family:monospace;font-weight:700"><span style="color:'+cc+'">'+x.eaten+x.u+'</span>'
+      +(x.all>x.eaten?' <span style="color:#8b92a8">+'+(+(x.all-x.eaten).toFixed(1))+' planned</span>':'')
+      +' <span style="color:#8b92a8">/'+x.lim+x.u+'</span></span></div>'
+      +'<div style="background:#2a2d3a;border-radius:99px;height:7px;overflow:hidden;position:relative">'
+      +'<div style="position:absolute;left:0;top:0;width:'+pa+'%;height:100%;background:'+cc+'33;border-radius:99px"></div>'
+      +'<div style="position:absolute;left:0;top:0;width:'+pe+'%;height:100%;background:'+cc+';border-radius:99px"></div>'
+      +'</div></div>';
+  });
+  // Sugar budget callout
+  var sugLeft=+(lim.sug-tEaten.sug).toFixed(1);
+  html+='<div style="margin-top:6px;padding:8px 10px;border-radius:8px;background:'+(sugLeft<=0?'#271616':sugLeft<10?'#1c1a10':'#16271e')+';color:'+(sugLeft<=0?'#ef4444':sugLeft<10?'#f59e0b':'#22c55e')+';font-size:11px">'
+    +'🍬 Sugar eaten: '+(sugLeft<=0?'⚠️ over limit!':sugLeft+'g left of '+lim.sug+'g')+'</div>';
+  html+='</div>';
+
+  // Meal slots
+  var SLOTS=[['breakfast','🌅 Breakfast'],['morningSnack','🍎 Morning Snack'],['lunch','🍽️ Lunch'],['afternoonSnack','🍪 Afternoon Snack'],['dinner','🌙 Dinner'],['eveningSnack','🌃 Evening Snack']];
+  SLOTS.forEach(function(slot){
+    var key=slot[0], label=slot[1];
+    var slotItems=items.filter(function(it){return it.meal===key;});
+    var slotCal=slotItems.reduce(function(a,it){return a+(it.status==='eaten'?it.cal:0);},0);
+    html+='<div style="background:#1a1d27;border-radius:11px;margin-bottom:8px;border:1px solid #2a2d3a;overflow:hidden">';
+    html+='<div style="background:#1e2230;padding:8px 13px;display:flex;justify-content:space-between;align-items:center">'
+      +'<span style="color:#f0f4ff;font-size:12px;font-weight:700">'+label+'</span>'
+      +(slotCal>0?'<span style="color:#8b92a8;font-size:11px">'+slotCal+' kcal eaten</span>':'')+'</div>';
+    html+='<div style="padding:8px 13px">';
+    if(slotItems.length===0){
+      html+='<div style="color:#8b92a8;font-size:11px;font-style:italic;padding:3px 0">Nothing here yet</div>';
+    } else {
+      slotItems.forEach(function(it){
+        var gidx=items.indexOf(it);
+        var isEaten=it.status==='eaten';
+        html+='<div style="padding:7px 0;border-bottom:1px solid #2a2d3a">'
+          +'<div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:5px">'
+          +'<div style="flex:1"><span style="color:#f0f4ff;font-size:12px;font-weight:600">'+it.prod+'</span>'
+          +'<div style="color:#8b92a8;font-size:10px;margin-top:1px">'+it.cal+' kcal · '+it.sug+'g sugar · '+it.pro+'g protein</div></div>'
+          +'<button type="button" onclick="removeItem(\''+m.id+'\','+gidx+')" style="background:transparent;border:none;color:#ef4444;font-size:16px;cursor:pointer;padding:0 4px;flex-shrink:0">✕</button>'
+          +'</div>'
+          +'<div style="display:flex;align-items:center;gap:8px;justify-content:space-between">'
+          // Status toggle
+          +'<button type="button" onclick="toggleStatus(\''+m.id+'\','+gidx+')" style="padding:5px 11px;border-radius:99px;border:1.5px solid '+(isEaten?'#22c55e':'#6ee7f7')+';background:'+(isEaten?'#16271e':'#161c2a')+';color:'+(isEaten?'#22c55e':'#6ee7f7')+';font-size:11px;font-weight:600;cursor:pointer">'+(isEaten?'✅ Eaten':'📋 Planned')+'</button>'
+          // Serving stepper
+          +'<div style="display:flex;align-items:center;gap:8px">'
+          +'<button type="button" onclick="editServ(\''+m.id+'\','+gidx+',-1)" style="width:28px;height:28px;border-radius:50%;border:1.5px solid #2a3a5a;background:#0f1117;color:#6ee7f7;font-size:16px;cursor:pointer;font-weight:700">−</button>'
+          +'<span style="color:#f0f4ff;font-family:monospace;font-size:12px;min-width:42px;text-align:center">'+it.serv+' serv</span>'
+          +'<button type="button" onclick="editServ(\''+m.id+'\','+gidx+',1)" style="width:28px;height:28px;border-radius:50%;border:1.5px solid #2a3a5a;background:#0f1117;color:#6ee7f7;font-size:16px;cursor:pointer;font-weight:700">+</button>'
+          +'</div></div></div>';
       });
-
-      // Remaining needs summary
-      html+='<div style="margin-top:10px;padding-top:10px;border-top:1px solid #2a2d3a">'
-        +'<div style="font-family:\'Bebas Neue\',cursive;font-size:12px;letter-spacing:1px;color:#6ee7f7;margin-bottom:6px">📋 STILL NEEDS TODAY</div>';
-      var needs=[
-        {n:'Calcium',rem:Math.max(0,Math.round(lim.calcium-log.calcium)),u:'mg'},
-        {n:'Vitamin D',rem:Math.max(0,+(lim.vitD-log.vitD).toFixed(1)),u:'mcg'},
-        {n:'Iron',rem:Math.max(0,+(lim.iron-log.iron).toFixed(1)),u:'mg'},
-        {n:'Protein',rem:Math.max(0,+(lim.pro-log.pro).toFixed(1)),u:'g'}
-      ];
-      needs.forEach(function(nd){
-        html+='<div style="display:flex;justify-content:space-between;padding:3px 0">'
-          +'<span style="color:#8b92a8;font-size:11px">'+nd.n+'</span>'
-          +'<span style="color:'+(nd.rem<=0?'#22c55e':'#8b92a8')+';font-size:11px;font-family:monospace">'+(nd.rem<=0?'✅ met':nd.rem+nd.u+' to go')+'</span></div>';
-      });
-      html+='</div>';
-
-      // Sugar budget callout
-      var sugLeft=+(lim.sug-log.sug).toFixed(1);
-      html+='<div style="margin-top:8px;padding:8px 10px;border-radius:8px;background:'+(sugLeft<=0?'#271616':sugLeft<10?'#1c1a10':'#16271e')+';color:'+(sugLeft<=0?'#ef4444':sugLeft<10?'#f59e0b':'#22c55e')+';font-size:11px">'
-        +'🍬 Sugar budget: '+(sugLeft<=0?'⚠️ limit reached!':sugLeft+'g left of '+lim.sug+'g')+'</div>';
-
-      // Items list
-      html+='<div style="margin-top:8px"><div style="color:#8b92a8;font-size:10px;margin-bottom:4px">TODAY: '+log.items.length+' item'+(log.items.length!==1?'s':'')+'</div>';
-      log.items.slice(0,4).forEach(function(it){
-        html+='<div style="display:flex;justify-content:space-between;padding:2px 0"><span style="color:#f0f4ff;font-size:10px">'+it.prod+' ('+it.serv+'x)</span><span style="color:#8b92a8;font-size:10px;font-family:monospace">'+it.cal+' kcal · '+it.sug+'g sug</span></div>';
-      });
-      html+='</div>';
-
-      // Reset button
-      html+='<button type="button" onclick="resetMember(\''+m.id+'\')" style="width:100%;margin-top:9px;padding:8px;border-radius:8px;border:1px solid #2a2d3a;background:transparent;color:#8b92a8;font-size:11px;cursor:pointer">🔄 Reset '+m.name+'\'s day</button>';
     }
-    html+='</div>';
+    html+='</div></div>';
   });
 
-  if(!anyData){
-    html='<div class="card"><div class="card-title">📊 FAMILY DASHBOARD</div><div style="color:#8b92a8;font-size:12px;text-align:center;padding:20px 0">Scan a food, tap who ate it, then "We Ate This" — each person\'s day shows here! 📷</div></div>'+html;
-  }
+  // Reset day
+  html+='<button type="button" onclick="resetMember(\''+m.id+'\')" style="width:100%;margin-top:4px;margin-bottom:10px;padding:9px;border-radius:9px;border:1px solid #2a2d3a;background:transparent;color:#8b92a8;font-size:11px;cursor:pointer">🔄 Reset '+m.name+'\'s day</button>';
+
   box.innerHTML=html;
 }
 
+function setDashPerson(id){_dashPerson=id;renderDashboard();}
+
+function recalcItem(it){
+  var n=it.serv; var ps=it.perServ;
+  if(!ps)return it;
+  it.cal=Math.round(ps.cal*n); it.pro=+(ps.pro*n).toFixed(1);
+  it.sug=+(ps.sug*n).toFixed(1); it.totalSug=+(ps.totalSug*n).toFixed(1);
+  it.sod=Math.round(ps.sod*n); it.carb=Math.round(ps.carb*n); it.sat=+(ps.sat*n).toFixed(1);
+  it.vitD=+(ps.vitD*n).toFixed(1); it.calcium=Math.round(ps.calcium*n);
+  it.iron=+(ps.iron*n).toFixed(1); it.pot=Math.round(ps.pot*n);
+  it.vitC=+(ps.vitC*n).toFixed(1); it.vitA=+(ps.vitA*n).toFixed(1);
+  return it;
+}
+function editServ(id,idx,delta){
+  var items=getMemberItems(id);
+  if(!items[idx])return;
+  items[idx].serv=Math.max(1,Math.min(20,items[idx].serv+delta));
+  recalcItem(items[idx]);
+  saveMemberItems(id,items);
+  renderDashboard();
+}
+function toggleStatus(id,idx){
+  var items=getMemberItems(id);
+  if(!items[idx])return;
+  items[idx].status=items[idx].status==='eaten'?'planned':'eaten';
+  saveMemberItems(id,items);
+  renderDashboard();
+}
+function removeItem(id,idx){
+  var items=getMemberItems(id);
+  if(!items[idx])return;
+  items.splice(idx,1);
+  saveMemberItems(id,items);
+  renderDashboard();
+}
 function resetMember(id){
-  if(confirm('Reset this person\'s day?')){
-    try{localStorage.removeItem('kfs_mlog_'+id+'_'+today());}catch(e){}
+  if(confirm('Reset this person\'s whole day?')){
+    try{localStorage.removeItem('kfs_items_'+id+'_'+today());localStorage.removeItem('kfs_mlog_'+id+'_'+today());}catch(e){}
     renderDashboard();
   }
 }
 
-function confirmAte(){
+
+
+function logFood(status){
   if(!_curResult)return;
   var r=_curResult;
   var ids=Object.keys(_whoServings);
@@ -803,47 +887,44 @@ function confirmAte(){
     var msg0=document.getElementById('ateMsg');
     msg0.style.display='block';
     msg0.style.color='#f59e0b';
-    msg0.textContent='⚠️ Tap who ate this first (above), then tap We Ate This.';
+    msg0.textContent='⚠️ Tap who ate this first (above), then choose Ate or Plan.';
     return;
   }
   var names=[];
   var skipped=[];
   ids.forEach(function(id){
     var grp=memberGroup(id);
-    // Kid-safety guardrail: block kids from foods not recommended for kids
     if(grp==='young' && r.kidSkip){
       var mk=FAMILY_MEMBERS.find(function(x){return x.id===id;});
       skipped.push(mk?mk.emoji+' '+mk.name:id);
       return;
     }
     var n=_whoServings[id];
-    var log=getMemberLog(id);
-    log.cal      += Math.round(r.cals*n);
-    log.pro      += +(r.prot*n).toFixed(1);
-    log.sug      += +(r.sugar*n).toFixed(1);
-    log.totalSug += +((r.totalSug||r.sugar)*n).toFixed(1);
-    log.sod      += Math.round(r.sodium*n);
-    log.carb     += Math.round(r.carb*n);
-    log.sat      += +(r.satf*n).toFixed(1);
-    log.vitD     += +((r.vitD||0)*n).toFixed(1);
-    log.calcium  += Math.round((r.calcium||0)*n);
-    log.iron     += +((r.iron||0)*n).toFixed(1);
-    log.pot      += Math.round((r.potassium||0)*n);
-    log.vitC     += +((r.vitC||0)*n).toFixed(1);
-    log.vitA     += +((r.vitA||0)*n).toFixed(1);
-    log.items.unshift({prod:r.prod,serv:n,meal:_curMeal,cal:Math.round(r.cals*n),sug:+(r.sugar*n).toFixed(1),sod:Math.round(r.sodium*n),time:new Date().toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'})});
-    if(log.items.length>40)log.items=log.items.slice(0,40);
-    saveMemberLog(id,log);
+    var items=getMemberItems(id);
+    items.unshift({
+      prod:r.prod, serv:n, meal:_curMeal, status:status,
+      cal:Math.round(r.cals*n), pro:+(r.prot*n).toFixed(1),
+      sug:+(r.sugar*n).toFixed(1), totalSug:+((r.totalSug||r.sugar)*n).toFixed(1),
+      sod:Math.round(r.sodium*n), carb:Math.round(r.carb*n), sat:+(r.satf*n).toFixed(1),
+      vitD:+((r.vitD||0)*n).toFixed(1), calcium:Math.round((r.calcium||0)*n),
+      iron:+((r.iron||0)*n).toFixed(1), pot:Math.round((r.potassium||0)*n),
+      vitC:+((r.vitC||0)*n).toFixed(1), vitA:+((r.vitA||0)*n).toFixed(1),
+      perServ:{cal:r.cals,pro:r.prot,sug:r.sugar,totalSug:(r.totalSug||r.sugar),sod:r.sodium,carb:r.carb,sat:r.satf,vitD:(r.vitD||0),calcium:(r.calcium||0),iron:(r.iron||0),pot:(r.potassium||0),vitC:(r.vitC||0),vitA:(r.vitA||0)},
+      time:new Date().toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'})
+    });
+    if(items.length>60)items=items.slice(0,60);
+    saveMemberItems(id,items);
     var m=FAMILY_MEMBERS.find(function(x){return x.id===id;});
     names.push((m?m.emoji+' '+m.name:id)+' ('+n+')');
   });
   document.getElementById('actionRow').style.display='none';
   var msg=document.getElementById('ateMsg');
   msg.style.display='block';
+  var verb=status==='eaten'?'Logged':'Planned';
   var html='';
   if(names.length>0){
     msg.style.color='#22c55e';
-    html+='✅ Logged to: '+names.join(', ')+'!';
+    html+='✅ '+verb+' for: '+names.join(', ')+'!';
   }
   if(skipped.length>0){
     if(names.length>0)html+='<br>';
@@ -858,6 +939,8 @@ function confirmAte(){
   }
   msg.innerHTML=html;
 }
+function confirmAte(){ logFood('eaten'); }
+function planFood(){ logFood('planned'); }
 
 // ── HELPERS ──
 function setStatus(msg){
@@ -909,6 +992,7 @@ document.addEventListener('DOMContentLoaded', function(){
 
   // Action buttons
   document.getElementById('btnAte').addEventListener('click', confirmAte);
+  var bp=document.getElementById('btnPlan'); if(bp) bp.addEventListener('click', planFood);
   document.getElementById('btnBrowse').addEventListener('click', function(){document.getElementById('actionRow').style.display='none';});
   document.getElementById('btnAgain').addEventListener('click', resetAll);
 
