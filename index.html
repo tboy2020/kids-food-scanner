@@ -1,4 +1,4 @@
-<!DOCTYPE html><!-- BUILD_20260626_163558 v13-1635 -->
+<!DOCTYPE html><!-- BUILD_20260626_163935 v14-1639 -->
 <html lang="en">
 <head>
 <meta charset="UTF-8"/>
@@ -93,7 +93,7 @@ input[type=text]{width:100%;padding:14px;background:#0f1117;border:2px solid #6e
 <div class="hdr">
   <div class="hdr-icon">🧒🍽️</div>
   <div class="hdr-title">KIDS FOOD SCANNER</div>
-  <div class="hdr-sub">Snap · Analyze · Track · Feed Smart<div id="buildTag" style="color:#3b82f6;font-size:9px;margin-top:3px;letter-spacing:1px">BUILD v13-1635</div></div>
+  <div class="hdr-sub">Snap · Analyze · Track · Feed Smart<div id="buildTag" style="color:#3b82f6;font-size:9px;margin-top:3px;letter-spacing:1px">BUILD v14-1639</div></div>
 </div>
 
 <!-- SCANNER SCREEN -->
@@ -880,6 +880,62 @@ function logScan(r,n,status){
   saveDayData(d);
 }
 
+// ── DATE + HISTORY HELPERS (v14) ──
+var _dashRange='day';   // day | week | month | year
+var _dashScope='person'; // person | family
+
+function dateKey(d){return d.toISOString().slice(0,10);}
+function itemsForDate(id,dstr){
+  try{
+    var raw=localStorage.getItem('kfs_items_'+id+'_'+dstr);
+    if(raw)return JSON.parse(raw);
+  }catch(e){}
+  return [];
+}
+// Return array of date strings spanning the range ending today
+function rangeDates(range){
+  var out=[]; var now=new Date(); var days=1;
+  if(range==='day')days=1; else if(range==='week')days=7; else if(range==='month')days=30; else if(range==='year')days=365;
+  for(var i=0;i<days;i++){
+    var d=new Date(now); d.setDate(now.getDate()-i); out.push(dateKey(d));
+  }
+  return out;
+}
+// Aggregate a person's items across a range. Returns {totals, daysWithData, eatenTotals}
+function aggregateRange(id,range){
+  var dates=rangeDates(range);
+  var allItems=[], eatenItems=[], daysWithData=0;
+  dates.forEach(function(ds){
+    var items=itemsForDate(id,ds);
+    if(items.length>0)daysWithData++;
+    items.forEach(function(it){
+      allItems.push(it);
+      if(it.status==='eaten')eatenItems.push(it);
+    });
+  });
+  return {all:sumItems(allItems), eaten:sumItems(eatenItems), days:Math.max(1,daysWithData), rawDays:dates.length, count:allItems.length};
+}
+// Aggregate whole family across a range (sum of all members)
+function aggregateFamily(range){
+  var totEaten={}, totAll={}, days=0, count=0;
+  FAMILY_MEMBERS.forEach(function(m){
+    var a=aggregateRange(m.id,range);
+    days=Math.max(days,a.days); count+=a.count;
+    for(var k in a.eaten){totEaten[k]=(totEaten[k]||0)+a.eaten[k];}
+    for(var k2 in a.all){totAll[k2]=(totAll[k2]||0)+a.all[k2];}
+  });
+  return {eaten:totEaten, all:totAll, days:Math.max(1,days), count:count};
+}
+// Family combined daily limits (sum of each member's limit)
+function familyLimits(){
+  var fl={};
+  FAMILY_MEMBERS.forEach(function(m){
+    var lim=MEMBER_LIMITS[m.group];
+    for(var k in lim){fl[k]=(fl[k]||0)+lim[k];}
+  });
+  return fl;
+}
+
 var _dashPerson='anu';
 
 function renderDashboard(){
@@ -887,13 +943,41 @@ function renderDashboard(){
   if(!box)return;
   var html='';
 
-  // Person switcher
+  // Range toggle: Day / Week / Month / Year
+  html+='<div style="display:flex;gap:5px;margin-bottom:9px">';
+  [['day','Day'],['week','Week'],['month','Month'],['year','Year']].forEach(function(r){
+    var on=_dashRange===r[0];
+    html+='<button type="button" onclick="setDashRange(\''+r[0]+'\')" style="flex:1;padding:8px 4px;border-radius:9px;border:1.5px solid '+(on?'#6ee7f7':'#2a2d3a')+';background:'+(on?'#161c2a':'#1a1d27')+';color:'+(on?'#6ee7f7':'#8b92a8')+';font-size:12px;font-weight:700;cursor:pointer">'+r[1]+'</button>';
+  });
+  html+='</div>';
+
+  // Scope toggle: Per-person / Whole family
+  html+='<div style="display:flex;gap:5px;margin-bottom:11px">';
+  [['person','👤 Per Person'],['family','👨‍👩‍👧‍👦 Whole Family']].forEach(function(s){
+    var on=_dashScope===s[0];
+    html+='<button type="button" onclick="setDashScope(\''+s[0]+'\')" style="flex:1;padding:7px 4px;border-radius:9px;border:1.5px solid '+(on?'#6ee7f7':'#2a2d3a')+';background:'+(on?'#161c2a':'#1a1d27')+';color:'+(on?'#6ee7f7':'#8b92a8')+';font-size:11px;font-weight:600;cursor:pointer">'+s[1]+'</button>';
+  });
+  html+='</div>';
+
+  // If family scope, render family view and return
+  if(_dashScope==='family'){
+    box.innerHTML=html+renderFamilyView();
+    return;
+  }
+
+  // Person switcher (only in per-person scope)
   html+='<div style="display:flex;gap:6px;margin-bottom:12px;overflow-x:auto;padding-bottom:2px">';
   FAMILY_MEMBERS.forEach(function(m){
     var on=_dashPerson===m.id;
     html+='<button type="button" onclick="setDashPerson(\''+m.id+'\')" style="flex-shrink:0;padding:8px 14px;border-radius:99px;border:1.5px solid '+(on?'#6ee7f7':'#2a2d3a')+';background:'+(on?'#161c2a':'#1a1d27')+';color:'+(on?'#6ee7f7':'#8b92a8')+';font-size:12px;font-weight:600;cursor:pointer">'+m.emoji+' '+m.name+'</button>';
   });
   html+='</div>';
+
+  // For non-day ranges, show aggregated trend view per person and return
+  if(_dashRange!=='day'){
+    box.innerHTML=html+renderTrendView(_dashPerson);
+    return;
+  }
 
   var m=FAMILY_MEMBERS.find(function(x){return x.id===_dashPerson;});
   var lim=MEMBER_LIMITS[m.group];
@@ -1032,6 +1116,106 @@ function renderDashboard(){
 }
 
 function setDashPerson(id){_dashPerson=id;renderDashboard();}
+function setDashRange(r){_dashRange=r;renderDashboard();}
+function setDashScope(s){_dashScope=s;renderDashboard();}
+
+// Shared nutrient list with ceiling/floor type
+function nutrientDefs(lim){
+  return [
+    {e:'🔥',n:'Calories',k:'cal',lim:lim.cal,u:'',type:'ceil'},
+    {e:'🍬',n:'Added Sugar',k:'sug',lim:lim.sug,u:'g',type:'ceil'},
+    {e:'🧂',n:'Sodium',k:'sod',lim:lim.sod,u:'mg',type:'ceil'},
+    {e:'🧈',n:'Saturated Fat',k:'sat',lim:lim.sat,u:'g',type:'ceil'},
+    {e:'🍞',n:'Total Carbs',k:'carb',lim:lim.carb,u:'g',type:'ceil'},
+    {e:'💪',n:'Protein',k:'pro',lim:lim.pro,u:'g',type:'floor'},
+    {e:'🦴',n:'Calcium',k:'calcium',lim:lim.calcium,u:'mg',type:'floor'},
+    {e:'⚡',n:'Iron',k:'iron',lim:lim.iron,u:'mg',type:'floor'},
+    {e:'☀️',n:'Vitamin D',k:'vitD',lim:lim.vitD,u:'mcg',type:'floor'},
+    {e:'🫀',n:'Potassium',k:'pot',lim:lim.pot,u:'mg',type:'floor'},
+    {e:'🍊',n:'Vitamin C',k:'vitC',lim:lim.vitC,u:'mg',type:'floor'},
+    {e:'👁️',n:'Vitamin A',k:'vitA',lim:lim.vitA,u:'mcg',type:'floor'}
+  ];
+}
+
+function rangeLabel(r){return r==='week'?'7-day':r==='month'?'30-day':r==='year'?'365-day':'today';}
+
+// Per-person aggregated trend view (week/month/year): shows daily AVERAGE vs limit + total
+function renderTrendView(id){
+  var m=FAMILY_MEMBERS.find(function(x){return x.id===id;});
+  var lim=MEMBER_LIMITS[m.group];
+  var agg=aggregateRange(id,_dashRange);
+  var defs=nutrientDefs(lim);
+  var rl=rangeLabel(_dashRange);
+  var html='<div style="background:#1a1d27;border-radius:13px;padding:13px 15px;margin-bottom:11px;border:1px solid #2a2d3a">';
+  html+='<div style="font-family:\'Bebas Neue\',cursive;font-size:15px;letter-spacing:2px;color:#6ee7f7;margin-bottom:3px">'+m.emoji+' '+m.name+' — '+rl.toUpperCase()+'</div>';
+  html+='<div style="color:#8b92a8;font-size:11px;margin-bottom:11px">'+agg.count+' items logged over '+agg.days+' day'+(agg.days!==1?'s':'')+' with data. Showing daily average vs limit.</div>';
+  if(agg.count===0){
+    html+='<div style="color:#8b92a8;font-size:12px;text-align:center;padding:16px 0">No data yet for this range. Keep logging — trends will appear here! 📈</div></div>';
+    return html;
+  }
+  defs.forEach(function(x){
+    var avg=+(agg.eaten[x.k]/agg.days).toFixed(1);
+    var total=agg.eaten[x.k];
+    var p=Math.min(Math.round(avg/x.lim*100),100);
+    var cc, tag;
+    if(x.type==='ceil'){
+      if(avg>x.lim){cc='#ef4444';tag='⚠️ over avg';}
+      else if(p>=80){cc='#f59e0b';tag='high avg';}
+      else{cc='#22c55e';tag='✓ ok';}
+    } else {
+      if(p>=80){cc='#22c55e';tag='⭐ great';}
+      else if(p>=40){cc='#f59e0b';tag='ok';}
+      else{cc='#ef4444';tag='low';}
+    }
+    html+='<div style="margin-bottom:8px"><div style="display:flex;justify-content:space-between;margin-bottom:3px">'
+      +'<span style="color:#f0f4ff;font-size:11px;font-weight:600">'+x.e+' '+x.n+'</span>'
+      +'<span style="font-size:10px;font-family:monospace;font-weight:700"><span style="color:'+cc+'">'+avg+x.u+'/day</span> <span style="color:#8b92a8">avg · '+total+x.u+' total · '+tag+'</span></span></div>'
+      +'<div style="background:#2a2d3a;border-radius:99px;height:6px;overflow:hidden"><div style="width:'+p+'%;height:100%;border-radius:99px;background:'+cc+'"></div></div></div>';
+  });
+  html+='</div>';
+  return html;
+}
+
+// Whole-family view for any range
+function renderFamilyView(){
+  var rl=rangeLabel(_dashRange);
+  var fl=familyLimits();
+  var defs=nutrientDefs(fl);
+  var html='';
+  if(_dashRange==='day'){
+    // Per-day family snapshot: sum members today
+    var fam=aggregateFamily('day');
+    html+='<div style="background:#1a1d27;border-radius:13px;padding:13px 15px;margin-bottom:11px;border:1px solid #2a2d3a">';
+    html+='<div style="font-family:\'Bebas Neue\',cursive;font-size:15px;letter-spacing:2px;color:#6ee7f7;margin-bottom:3px">👨‍👩‍👧‍👦 WHOLE FAMILY — TODAY</div>';
+    html+='<div style="color:#8b92a8;font-size:11px;margin-bottom:11px">Combined intake vs combined family limits.</div>';
+    if(fam.count===0){html+='<div style="color:#8b92a8;font-size:12px;text-align:center;padding:16px 0">Nothing logged today yet.</div></div>';return html;}
+    defs.forEach(function(x){
+      var v=fam.eaten[x.k]||0; var p=Math.min(Math.round(v/x.lim*100),100);
+      var cc,tag;
+      if(x.type==='ceil'){cc=v>x.lim?'#ef4444':p>=80?'#f59e0b':'#22c55e';tag=v>x.lim?'⚠️ over':p>=80?'high':'✓ ok';}
+      else{cc=p>=80?'#22c55e':p>=40?'#f59e0b':'#ef4444';tag=p>=80?'⭐ great':p>=40?'ok':'low';}
+      html+='<div style="margin-bottom:8px"><div style="display:flex;justify-content:space-between;margin-bottom:3px"><span style="color:#f0f4ff;font-size:11px;font-weight:600">'+x.e+' '+x.n+'</span><span style="font-size:10px;font-family:monospace;font-weight:700"><span style="color:'+cc+'">'+v+x.u+'</span> <span style="color:#8b92a8">/'+x.lim+x.u+' · '+tag+'</span></span></div><div style="background:#2a2d3a;border-radius:99px;height:6px;overflow:hidden"><div style="width:'+p+'%;height:100%;border-radius:99px;background:'+cc+'"></div></div></div>';
+    });
+    html+='</div>';
+    return html;
+  }
+  // Week/month/year family: daily average across family
+  var fam=aggregateFamily(_dashRange);
+  html+='<div style="background:#1a1d27;border-radius:13px;padding:13px 15px;margin-bottom:11px;border:1px solid #2a2d3a">';
+  html+='<div style="font-family:\'Bebas Neue\',cursive;font-size:15px;letter-spacing:2px;color:#6ee7f7;margin-bottom:3px">👨‍👩‍👧‍👦 WHOLE FAMILY — '+rl.toUpperCase()+'</div>';
+  html+='<div style="color:#8b92a8;font-size:11px;margin-bottom:11px">'+fam.count+' items over '+fam.days+' day'+(fam.days!==1?'s':'')+'. Family daily average vs combined limit.</div>';
+  if(fam.count===0){html+='<div style="color:#8b92a8;font-size:12px;text-align:center;padding:16px 0">No data in this range yet. 📈</div></div>';return html;}
+  defs.forEach(function(x){
+    var avg=+(fam.eaten[x.k]/fam.days).toFixed(1); var total=fam.eaten[x.k];
+    var p=Math.min(Math.round(avg/x.lim*100),100);
+    var cc,tag;
+    if(x.type==='ceil'){cc=avg>x.lim?'#ef4444':p>=80?'#f59e0b':'#22c55e';tag=avg>x.lim?'⚠️ over avg':p>=80?'high':'✓ ok';}
+    else{cc=p>=80?'#22c55e':p>=40?'#f59e0b':'#ef4444';tag=p>=80?'⭐ great':p>=40?'ok':'low';}
+    html+='<div style="margin-bottom:8px"><div style="display:flex;justify-content:space-between;margin-bottom:3px"><span style="color:#f0f4ff;font-size:11px;font-weight:600">'+x.e+' '+x.n+'</span><span style="font-size:10px;font-family:monospace;font-weight:700"><span style="color:'+cc+'">'+avg+x.u+'/day</span> <span style="color:#8b92a8">· '+total+x.u+' total · '+tag+'</span></span></div><div style="background:#2a2d3a;border-radius:99px;height:6px;overflow:hidden"><div style="width:'+p+'%;height:100%;border-radius:99px;background:'+cc+'"></div></div></div>';
+  });
+  html+='</div>';
+  return html;
+}
 
 function recalcItem(it){
   var n=it.serv; var ps=it.perServ;
