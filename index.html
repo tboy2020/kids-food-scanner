@@ -1,4 +1,4 @@
-<!DOCTYPE html><!-- BUILD_20260623_134516 v8-1345 -->
+<!DOCTYPE html><!-- BUILD_20260626_120350 v9-1203 -->
 <html lang="en">
 <head>
 <meta charset="UTF-8"/>
@@ -91,7 +91,7 @@ input[type=text]{width:100%;padding:14px;background:#0f1117;border:2px solid #6e
 <div class="hdr">
   <div class="hdr-icon">🧒🍽️</div>
   <div class="hdr-title">KIDS FOOD SCANNER</div>
-  <div class="hdr-sub">Snap · Analyze · Track · Feed Smart<div id="buildTag" style="color:#3b82f6;font-size:9px;margin-top:3px;letter-spacing:1px">BUILD v8-1345</div></div>
+  <div class="hdr-sub">Snap · Analyze · Track · Feed Smart<div id="buildTag" style="color:#3b82f6;font-size:9px;margin-top:3px;letter-spacing:1px">BUILD v9-1203</div></div>
 </div>
 
 <!-- SCANNER SCREEN -->
@@ -599,13 +599,15 @@ function renderResults(r,n){
   document.getElementById('vAdultsTitle').textContent=r.adultSkip?'WATCH FOR ADULTS':aw?'OKAY FOR ADULTS':'GOOD FOR ADULTS';
   document.getElementById('vAdultsReason').textContent=r.adultReason;
 
-  // Action buttons
-  if(kOk){
-    document.getElementById('actionRow').style.display='flex';
-    document.getElementById('skipMsg').style.display='none';
+  // Action buttons — always available; kid-safety enforced per-person at log time
+  document.getElementById('actionRow').style.display='flex';
+  var skipEl=document.getElementById('skipMsg');
+  if(!kOk){
+    // Show an informational note (not a block) that kids will be skipped
+    skipEl.style.display='block';
+    skipEl.innerHTML='⛔ Not recommended for kids — Anu & Dominion will be skipped if selected. Adults can still log it.';
   } else {
-    document.getElementById('actionRow').style.display='none';
-    document.getElementById('skipMsg').style.display='block';
+    skipEl.style.display='none';
   }
   document.getElementById('ateMsg').style.display='none';
 
@@ -805,7 +807,15 @@ function confirmAte(){
     return;
   }
   var names=[];
+  var skipped=[];
   ids.forEach(function(id){
+    var grp=memberGroup(id);
+    // Kid-safety guardrail: block kids from foods not recommended for kids
+    if(grp==='young' && r.kidSkip){
+      var mk=FAMILY_MEMBERS.find(function(x){return x.id===id;});
+      skipped.push(mk?mk.emoji+' '+mk.name:id);
+      return;
+    }
     var n=_whoServings[id];
     var log=getMemberLog(id);
     log.cal      += Math.round(r.cals*n);
@@ -830,8 +840,23 @@ function confirmAte(){
   document.getElementById('actionRow').style.display='none';
   var msg=document.getElementById('ateMsg');
   msg.style.display='block';
-  msg.style.color='#22c55e';
-  msg.innerHTML='✅ Logged to: '+names.join(', ')+'.<br><span style="font-size:11px;color:#8b92a8">Tap 📊 Dashboard to see each person\'s day.</span>';
+  var html='';
+  if(names.length>0){
+    msg.style.color='#22c55e';
+    html+='✅ Logged to: '+names.join(', ')+'!';
+  }
+  if(skipped.length>0){
+    if(names.length>0)html+='<br>';
+    html+='<span style="color:#ef4444">⛔ Skipped (not for kids): '+skipped.join(', ')+'</span>';
+  }
+  if(names.length===0 && skipped.length>0){
+    msg.style.color='#ef4444';
+    html+='<br><span style="font-size:11px;color:#8b92a8">This food isn\'t recommended for children. Try a kid-friendly option!</span>';
+  }
+  if(names.length>0){
+    html+='<button type="button" onclick="switchScreen(\'screenDash\')" style="display:block;width:100%;margin-top:10px;padding:11px;border-radius:10px;border:none;background:linear-gradient(135deg,#6ee7f7,#3b82f6);color:#0f1117;font-family:\'Bebas Neue\',cursive;font-size:15px;letter-spacing:2px;cursor:pointer">📊 VIEW DASHBOARD</button>';
+  }
+  msg.innerHTML=html;
 }
 
 // ── HELPERS ──
