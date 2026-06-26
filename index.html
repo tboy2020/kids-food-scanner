@@ -1,4 +1,4 @@
-<!DOCTYPE html><!-- BUILD_20260626_132707 v11-1327 -->
+<!DOCTYPE html><!-- BUILD_20260626_162100 v12-1621 -->
 <html lang="en">
 <head>
 <meta charset="UTF-8"/>
@@ -91,7 +91,7 @@ input[type=text]{width:100%;padding:14px;background:#0f1117;border:2px solid #6e
 <div class="hdr">
   <div class="hdr-icon">🧒🍽️</div>
   <div class="hdr-title">KIDS FOOD SCANNER</div>
-  <div class="hdr-sub">Snap · Analyze · Track · Feed Smart<div id="buildTag" style="color:#3b82f6;font-size:9px;margin-top:3px;letter-spacing:1px">BUILD v11-1327</div></div>
+  <div class="hdr-sub">Snap · Analyze · Track · Feed Smart<div id="buildTag" style="color:#3b82f6;font-size:9px;margin-top:3px;letter-spacing:1px">BUILD v12-1621</div></div>
 </div>
 
 <!-- SCANNER SCREEN -->
@@ -495,7 +495,7 @@ async function analyze(){
         max_tokens:600,
         messages:[{role:'user',content:[
           {type:'image',source:{type:'base64',media_type:'image/jpeg',data:_b64}},
-          {type:'text',text:'Read this nutrition label carefully. Output ONLY these lines with the number for each (no extra words). For Added Sugars, look for a line like \'Incl. Xg Added Sugars\' under Total Sugars. Read vitamin/mineral amounts in mg or mcg (not the % column).\nProduct name: \nServing size: \nCalories: \nTotal Fat: \nSaturated Fat: \nSodium: \nTotal Carbohydrate: \nTotal Sugars: \nAdded Sugars: \nProtein: \nVitamin D: \nCalcium: \nIron: \nPotassium: \nVitamin C: \nVitamin A: \nUse 0 only if truly not on the label.'}
+          {type:'text',text:'Look at this image. It is either (A) a packaged food with a Nutrition Facts label, or (B) a whole or prepared food with no label (like an apple, banana, egg, rice, chicken, jollof rice, plantain, moi moi, egusi, etc).\n\nIf it is a LABEL: read the actual values. Set Source to LABEL. For Added Sugars look for \'Incl. Xg Added Sugars\'. Read vitamin/mineral amounts in mg or mcg, not the % column.\n\nIf it is a WHOLE or PREPARED FOOD with no label: identify the specific food and estimate a realistic nutrition profile for ONE typical serving using standard nutrition data. Set Source to ESTIMATE. Name the actual food (e.g. \'Apple (medium)\', \'Jollof Rice (1 cup)\').\n\nOutput ONLY these lines with a number for each (no extra words):\nSource: \nProduct name: \nServing size: \nCalories: \nTotal Fat: \nSaturated Fat: \nSodium: \nTotal Carbohydrate: \nTotal Sugars: \nAdded Sugars: \nProtein: \nVitamin D: \nCalcium: \nIron: \nPotassium: \nVitamin C: \nVitamin A: \nFor a whole food, Added Sugars is almost always 0. Use 0 only when a nutrient is truly absent.'}
         ]}]
       })
     });
@@ -524,6 +524,8 @@ function numFrom(t,pats){for(var i=0;i<pats.length;i++){var m=t.match(pats[i]);i
 function strFrom(t,pats,fb){for(var i=0;i<pats.length;i++){var m=t.match(pats[i]);if(m)return m[1].trim();}return fb||'';}
 
 function buildResult(t){
+  var srcRaw=strFrom(t,[/source\s*[:\-]\s*([^\n]+)/i],'LABEL');
+  var isEstimate=/estimate/i.test(srcRaw);
   var sugar=numFrom(t,[/added sugars?\s*[:\-]?\s*(\d+(?:\.\d+)?)\s*g/i,/incl\.?\s*(\d+(?:\.\d+)?)\s*g\s*added/i,/added sugars?\s*(\d+)/i]);
   var sodium=numFrom(t,[/sodium\s*[:\-]?\s*(\d+(?:\.\d+)?)\s*mg/i,/sodium[^0-9]*(\d+)/i]);
   var prot=numFrom(t,[/protein\s*[:\-]?\s*(\d+(?:\.\d+)?)\s*g/i,/protein[^0-9]*(\d+)/i]);
@@ -554,6 +556,8 @@ function buildResult(t){
   if(prot<3)score-=15;else if(prot<5)score-=8;
   if(satf>5)score-=10;
   if(prot>=8)score+=10;if(sugar<=2)score+=10;
+  // Whole/prepared foods (no label, low added sugar, low sodium) get a wholefood bonus
+  if(isEstimate&&sugar<=5&&sodium<=200)score+=20;
   score=Math.max(5,Math.min(100,score));
 
   var pairings=[];
@@ -579,7 +583,7 @@ function buildResult(t){
   var rCarb=Math.round(carb*1.2);
   var rKidSkip=rAsug>10||rSod>400;
   var rAdultSkip=rSod>900||rAsug>30;
-  return{prod,serv,servG,sugar,sodium,prot,cals,satf,carb,
+  return{prod,serv,servG,sugar,sodium,prot,cals,satf,carb,isEstimate,
     totalSug,vitD,calcium,iron,potassium,vitC,vitA,
     rSug,rAsug,rSod,rPro,rCal,rSat,rCarb,rKidSkip,rAdultSkip,
     kidSkip,adultSkip,adultWatch,kidReason,adultReason,score,pairings:pairings.slice(0,4)};
@@ -605,7 +609,8 @@ function renderResults(r,n){
   var sc=r.score;
   var cc=sc>=70?'#22c55e':sc>=45?'#f59e0b':'#ef4444';
   document.getElementById('rName').textContent=r.prod;
-  document.getElementById('rServ').textContent='Serving: '+r.serv+(n>1?' (×'+n+')':'');
+  document.getElementById('rServ').innerHTML='Serving: '+r.serv+(n>1?' (×'+n+')':'')
+    +(r.isEstimate?'<br><span style="display:inline-block;margin-top:4px;background:#1c1a10;color:#f59e0b;font-size:10px;padding:2px 8px;border-radius:99px;border:1px solid #f59e0b55">≈ Estimated (no label) — values approximate</span>':'<br><span style="display:inline-block;margin-top:4px;background:#16271e;color:#22c55e;font-size:10px;padding:2px 8px;border-radius:99px;border:1px solid #22c55e55">🏷️ From label</span>');
   document.getElementById('rRing').style.background='conic-gradient('+cc+' '+sc+'%, #2a2d3a '+sc+'%)';
   document.getElementById('rScore').style.color=cc;
   document.getElementById('rScore').textContent=sc;
@@ -861,7 +866,7 @@ function renderDashboard(){
         var isEaten=it.status==='eaten';
         html+='<div style="padding:7px 0;border-bottom:1px solid #2a2d3a">'
           +'<div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:5px">'
-          +'<div style="flex:1"><span style="color:#f0f4ff;font-size:12px;font-weight:600">'+it.prod+'</span>'
+          +'<div style="flex:1"><span style="color:#f0f4ff;font-size:12px;font-weight:600">'+it.prod+(it.est?' <span style=\'color:#f59e0b;font-size:9px\'>≈est</span>':'')+'</span>'
           +'<div style="color:#8b92a8;font-size:10px;margin-top:1px">'+it.cal+' kcal · '+it.sug+'g sugar · '+it.pro+'g protein</div></div>'
           +'<button type="button" onclick="removeItem(\''+m.id+'\','+gidx+')" style="background:transparent;border:none;color:#ef4444;font-size:16px;cursor:pointer;padding:0 4px;flex-shrink:0">✕</button>'
           +'</div>'
@@ -952,7 +957,7 @@ function logFood(status){
     var n=_whoServings[id];
     var items=getMemberItems(id);
     items.unshift({
-      prod:r.prod, serv:n, meal:_curMeal, status:status,
+      prod:r.prod, serv:n, meal:_curMeal, status:status, est:r.isEstimate,
       cal:Math.round(r.cals*n), pro:+(r.prot*n).toFixed(1),
       sug:+(r.sugar*n).toFixed(1), totalSug:+((r.totalSug||r.sugar)*n).toFixed(1),
       sod:Math.round(r.sodium*n), carb:Math.round(r.carb*n), sat:+(r.satf*n).toFixed(1),
