@@ -1,4 +1,4 @@
-<!DOCTYPE html><!-- BUILD_20260626_123435 v10-1234 -->
+<!DOCTYPE html><!-- BUILD_20260626_132707 v11-1327 -->
 <html lang="en">
 <head>
 <meta charset="UTF-8"/>
@@ -91,7 +91,7 @@ input[type=text]{width:100%;padding:14px;background:#0f1117;border:2px solid #6e
 <div class="hdr">
   <div class="hdr-icon">🧒🍽️</div>
   <div class="hdr-title">KIDS FOOD SCANNER</div>
-  <div class="hdr-sub">Snap · Analyze · Track · Feed Smart<div id="buildTag" style="color:#3b82f6;font-size:9px;margin-top:3px;letter-spacing:1px">BUILD v10-1234</div></div>
+  <div class="hdr-sub">Snap · Analyze · Track · Feed Smart<div id="buildTag" style="color:#3b82f6;font-size:9px;margin-top:3px;letter-spacing:1px">BUILD v11-1327</div></div>
 </div>
 
 <!-- SCANNER SCREEN -->
@@ -757,39 +757,89 @@ function renderDashboard(){
   var tEaten=sumItems(eaten);
   var tAll=sumItems(items);
 
-  // Summary card: Eaten vs Planned totals
-  html+='<div style="background:#1a1d27;border-radius:13px;padding:13px 15px;margin-bottom:11px;border:1px solid #2a2d3a">';
-  html+='<div style="font-family:\'Bebas Neue\',cursive;font-size:15px;letter-spacing:2px;color:#6ee7f7;margin-bottom:10px">'+m.emoji+' '+m.name+'\'S DAY</div>';
-
-  var rows=[
-    {e:'🍬',n:'Added Sugar',eaten:tEaten.sug,all:tAll.sug,lim:lim.sug,u:'g'},
-    {e:'🧂',n:'Sodium',eaten:tEaten.sod,all:tAll.sod,lim:lim.sod,u:'mg'},
-    {e:'💪',n:'Protein',eaten:tEaten.pro,all:tAll.pro,lim:lim.pro,u:'g',pro:true},
-    {e:'🔥',n:'Calories',eaten:tEaten.cal,all:tAll.cal,lim:lim.cal,u:''},
-    {e:'🦴',n:'Calcium',eaten:tEaten.calcium,all:tAll.calcium,lim:lim.calcium,u:'mg',vit:true},
-    {e:'⚡',n:'Iron',eaten:tEaten.iron,all:tAll.iron,lim:lim.iron,u:'mg',vit:true}
+  // ── FULL NUTRIENT PROFILE with two-tier warnings ──
+  // Build the 12-nutrient table. Each nutrient is either a CEILING (stay under) or FLOOR (reach toward).
+  var NUTS=[
+    {e:'🔥',n:'Calories',k:'cal',lim:lim.cal,u:'',type:'ceil'},
+    {e:'🍬',n:'Added Sugar',k:'sug',lim:lim.sug,u:'g',type:'ceil'},
+    {e:'🧂',n:'Sodium',k:'sod',lim:lim.sod,u:'mg',type:'ceil'},
+    {e:'🧈',n:'Saturated Fat',k:'sat',lim:lim.sat,u:'g',type:'ceil'},
+    {e:'🍞',n:'Total Carbs',k:'carb',lim:lim.carb,u:'g',type:'ceil'},
+    {e:'💪',n:'Protein',k:'pro',lim:lim.pro,u:'g',type:'floor'},
+    {e:'🦴',n:'Calcium',k:'calcium',lim:lim.calcium,u:'mg',type:'floor'},
+    {e:'⚡',n:'Iron',k:'iron',lim:lim.iron,u:'mg',type:'floor'},
+    {e:'☀️',n:'Vitamin D',k:'vitD',lim:lim.vitD,u:'mcg',type:'floor'},
+    {e:'🫀',n:'Potassium',k:'pot',lim:lim.pot,u:'mg',type:'floor'},
+    {e:'🍊',n:'Vitamin C',k:'vitC',lim:lim.vitC,u:'mg',type:'floor'},
+    {e:'👁️',n:'Vitamin A',k:'vitA',lim:lim.vitA,u:'mcg',type:'floor'}
   ];
-  rows.forEach(function(x){
-    var pe=Math.min(Math.round(x.eaten/x.lim*100),100);
-    var pa=Math.min(Math.round(x.all/x.lim*100),100);
-    var cc;
-    if(x.pro){cc=x.eaten>=x.lim*0.5?'#22c55e':x.eaten>=x.lim*0.25?'#f59e0b':'#ef4444';}
-    else if(x.vit){cc=pe>=50?'#22c55e':pe>=20?'#f59e0b':'#ef4444';}
-    else{cc=pe>=80?'#ef4444':pe>=50?'#f59e0b':'#22c55e';}
-    html+='<div style="margin-bottom:9px"><div style="display:flex;justify-content:space-between;margin-bottom:3px">'
+
+  // Detect day-level warnings for the banner
+  var eatenOver=[];   // ceilings already exceeded by EATEN
+  var planOver=[];    // ceilings projected over by PLANNED
+  var lowFloors=[];   // floors that even the full plan won't satisfy
+  NUTS.forEach(function(x){
+    var ev=tEaten[x.k], av=tAll[x.k];
+    if(x.type==='ceil'){
+      if(ev>x.lim) eatenOver.push(x.n);
+      else if(av>x.lim) planOver.push(x.n);
+    } else {
+      if(av < x.lim*0.5) lowFloors.push(x.n);
+    }
+  });
+
+  // Banner
+  var bg,bc,btxt;
+  if(eatenOver.length>0){
+    bg='#271616';bc='#ef4444';
+    btxt='⚠️ '+m.name+' is OVER limit on: '+eatenOver.join(', ')+'.';
+  } else if(planOver.length>0){
+    bg='#1c1a10';bc='#f59e0b';
+    btxt='📋 Heads up — '+m.name+'\'s PLAN goes over: '+planOver.join(', ')+'. Lower a serving below?';
+  } else if(lowFloors.length>0){
+    bg='#161c2a';bc='#6ee7f7';
+    btxt='💡 Even with the plan, '+m.name+' is low on: '+lowFloors.slice(0,3).join(', ')+(lowFloors.length>3?'…':'')+'. Add nutrient-rich foods.';
+  } else {
+    bg='#16271e';bc='#22c55e';
+    btxt='✅ '+m.name+'\'s day looks balanced — within all limits!';
+  }
+
+  html+='<div style="background:#1a1d27;border-radius:13px;padding:13px 15px;margin-bottom:11px;border:1px solid #2a2d3a">';
+  html+='<div style="font-family:\'Bebas Neue\',cursive;font-size:15px;letter-spacing:2px;color:#6ee7f7;margin-bottom:8px">'+m.emoji+' '+m.name+'\'S DAY</div>';
+  // Banner
+  html+='<div style="background:'+bg+';border:1px solid '+bc+'66;border-radius:9px;padding:9px 11px;margin-bottom:11px;color:'+bc+';font-size:11px;line-height:1.4">'+btxt+'</div>';
+
+  // Legend
+  html+='<div style="display:flex;gap:12px;margin-bottom:9px;font-size:9px;color:#8b92a8">'
+    +'<span><span style="display:inline-block;width:9px;height:9px;border-radius:2px;background:#6ee7f7;vertical-align:middle"></span> eaten</span>'
+    +'<span><span style="display:inline-block;width:9px;height:9px;border-radius:2px;background:#6ee7f733;vertical-align:middle"></span> planned</span></div>';
+
+  NUTS.forEach(function(x){
+    var ev=tEaten[x.k], av=tAll[x.k];
+    var pe=Math.min(Math.round(ev/x.lim*100),100);
+    var pa=Math.min(Math.round(av/x.lim*100),100);
+    var cc, tag;
+    if(x.type==='ceil'){
+      if(ev>x.lim){ cc='#ef4444'; tag='⚠️ over'; }
+      else if(av>x.lim){ cc='#f59e0b'; tag='📋 plan over'; }
+      else if(pe>=80){ cc='#f59e0b'; tag='high'; }
+      else { cc='#22c55e'; tag='✓ ok'; }
+    } else {
+      var bestPct=Math.round(av/x.lim*100);
+      if(bestPct>=80){ cc='#22c55e'; tag='⭐ great'; }
+      else if(bestPct>=40){ cc='#f59e0b'; tag='ok'; }
+      else { cc='#ef4444'; tag='low'; }
+    }
+    html+='<div style="margin-bottom:8px"><div style="display:flex;justify-content:space-between;margin-bottom:3px">'
       +'<span style="color:#f0f4ff;font-size:11px;font-weight:600">'+x.e+' '+x.n+'</span>'
-      +'<span style="font-size:11px;font-family:monospace;font-weight:700"><span style="color:'+cc+'">'+x.eaten+x.u+'</span>'
-      +(x.all>x.eaten?' <span style="color:#8b92a8">+'+(+(x.all-x.eaten).toFixed(1))+' planned</span>':'')
-      +' <span style="color:#8b92a8">/'+x.lim+x.u+'</span></span></div>'
-      +'<div style="background:#2a2d3a;border-radius:99px;height:7px;overflow:hidden;position:relative">'
+      +'<span style="font-size:10px;font-family:monospace;font-weight:700"><span style="color:'+cc+'">'+ev+x.u+'</span>'
+      +(av>ev?' <span style="color:#8b92a8">+'+(+(av-ev).toFixed(1))+'</span>':'')
+      +' <span style="color:#8b92a8">/'+x.lim+x.u+'</span> <span style="color:'+cc+'">'+tag+'</span></span></div>'
+      +'<div style="background:#2a2d3a;border-radius:99px;height:6px;overflow:hidden;position:relative">'
       +'<div style="position:absolute;left:0;top:0;width:'+pa+'%;height:100%;background:'+cc+'33;border-radius:99px"></div>'
       +'<div style="position:absolute;left:0;top:0;width:'+pe+'%;height:100%;background:'+cc+';border-radius:99px"></div>'
       +'</div></div>';
   });
-  // Sugar budget callout
-  var sugLeft=+(lim.sug-tEaten.sug).toFixed(1);
-  html+='<div style="margin-top:6px;padding:8px 10px;border-radius:8px;background:'+(sugLeft<=0?'#271616':sugLeft<10?'#1c1a10':'#16271e')+';color:'+(sugLeft<=0?'#ef4444':sugLeft<10?'#f59e0b':'#22c55e')+';font-size:11px">'
-    +'🍬 Sugar eaten: '+(sugLeft<=0?'⚠️ over limit!':sugLeft+'g left of '+lim.sug+'g')+'</div>';
   html+='</div>';
 
   // Meal slots
