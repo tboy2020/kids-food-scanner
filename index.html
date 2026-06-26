@@ -1,4 +1,4 @@
-<!DOCTYPE html><!-- BUILD_20260626_162100 v12-1621 -->
+<!DOCTYPE html><!-- BUILD_20260626_163558 v13-1635 -->
 <html lang="en">
 <head>
 <meta charset="UTF-8"/>
@@ -69,6 +69,8 @@ input[type=text]{width:100%;padding:14px;background:#0f1117;border:2px solid #6e
 .who-row{display:flex;flex-wrap:wrap;gap:7px;margin-bottom:4px}
 .who-chip{padding:8px 13px;border-radius:99px;border:1.5px solid #2a2d3a;background:#1a1d27;color:#8b92a8;font-size:12px;cursor:pointer;font-family:'DM Sans',sans-serif;font-weight:600}
 .who-chip.selected{border-color:#6ee7f7;color:#6ee7f7;background:#161c2a}
+.cuisine-tab{padding:7px 14px;border-radius:99px;border:1.5px solid #2a2d3a;background:#1a1d27;color:#8b92a8;font-size:12px;cursor:pointer;font-weight:600}
+.cuisine-tab.selected{border-color:#6ee7f7;color:#6ee7f7;background:#161c2a}
 .meal-grid{display:grid;grid-template-columns:1fr 1fr;gap:7px}
 .meal-chip{padding:9px 10px;border-radius:10px;border:1.5px solid #2a2d3a;background:#1a1d27;color:#8b92a8;font-size:11px;cursor:pointer;text-align:center;font-family:'DM Sans',sans-serif}
 .meal-chip.selected{border-color:#6ee7f7;color:#6ee7f7;background:#161c2a}
@@ -91,7 +93,7 @@ input[type=text]{width:100%;padding:14px;background:#0f1117;border:2px solid #6e
 <div class="hdr">
   <div class="hdr-icon">🧒🍽️</div>
   <div class="hdr-title">KIDS FOOD SCANNER</div>
-  <div class="hdr-sub">Snap · Analyze · Track · Feed Smart<div id="buildTag" style="color:#3b82f6;font-size:9px;margin-top:3px;letter-spacing:1px">BUILD v12-1621</div></div>
+  <div class="hdr-sub">Snap · Analyze · Track · Feed Smart<div id="buildTag" style="color:#3b82f6;font-size:9px;margin-top:3px;letter-spacing:1px">BUILD v13-1635</div></div>
 </div>
 
 <!-- SCANNER SCREEN -->
@@ -115,6 +117,21 @@ input[type=text]{width:100%;padding:14px;background:#0f1117;border:2px solid #6e
     <div class="upload-sub">Photo of a nutrition label</div>
   </div>
   <input type="file" id="fileIn" accept="image/*" capture="environment" style="display:none"/>
+
+  <!-- Quick Add: Nigerian/African + Common foods -->
+  <div class="card" style="margin-top:11px">
+    <div class="card-title">🍲 QUICK ADD A MEAL</div>
+    <p style="color:#8b92a8;font-size:11px;margin-bottom:10px">No label needed — tap a dish, or type one below.</p>
+    <div style="display:flex;gap:6px;margin-bottom:10px;flex-wrap:wrap" id="cuisineTabs">
+      <div class="cuisine-tab selected" onclick="setCuisine(this,'naija')">🇳🇬 Nigerian</div>
+      <div class="cuisine-tab" onclick="setCuisine(this,'common')">🍎 Common</div>
+    </div>
+    <div id="foodGrid" style="display:grid;grid-template-columns:1fr 1fr;gap:7px"></div>
+    <div style="margin-top:11px;display:flex;gap:7px">
+      <input type="text" id="typeFood" placeholder="Or type any food…" style="flex:1;padding:11px;border-radius:9px;border:1px solid #2a2d3a;background:#0f1117;color:#f0f4ff;font-size:13px"/>
+      <button type="button" onclick="analyzeTyped()" style="padding:11px 16px;border-radius:9px;border:none;background:linear-gradient(135deg,#6ee7f7,#3b82f6);color:#0f1117;font-family:\'Bebas Neue\',cursive;font-size:14px;letter-spacing:1px;cursor:pointer">GO</button>
+    </div>
+  </div>
 
   <div class="status-bar" id="statusBar"></div>
   <button type="button" class="analyze-btn" id="btnAnalyze">ANALYZE FOR KIDS 🔍</button>
@@ -522,6 +539,130 @@ async function analyze(){
 // ── PARSE ──
 function numFrom(t,pats){for(var i=0;i<pats.length;i++){var m=t.match(pats[i]);if(m)return parseFloat(m[1]);}return 0;}
 function strFrom(t,pats,fb){for(var i=0;i<pats.length;i++){var m=t.match(pats[i]);if(m)return m[1].trim();}return fb||'';}
+
+// ── QUICK-ADD FOOD DATABASE (per typical serving, estimated) ──
+var FOOD_DB={
+  naija:[
+    {n:'Jollof Rice',e:'🍚',serv:'1 cup',cal:330,sug:2,tsug:4,sod:570,pro:7,sat:3,carb:54,vitD:0,calcium:30,iron:2.2,pot:280,vitC:6,vitA:60},
+    {n:'Fried Rice',e:'🍛',serv:'1 cup',cal:340,sug:2,tsug:3,sod:600,pro:9,sat:3,carb:52,vitD:0,calcium:35,iron:2,pot:300,vitC:8,vitA:120},
+    {n:'White Rice',e:'🍚',serv:'1 cup',cal:205,sug:0,tsug:0,sod:2,pro:4,sat:0.2,carb:45,vitD:0,calcium:16,iron:1.9,pot:55,vitC:0,vitA:0},
+    {n:'Ofada Rice',e:'🍚',serv:'1 cup',cal:215,sug:0,tsug:0,sod:5,pro:5,sat:0.3,carb:45,vitD:0,calcium:20,iron:2,pot:90,vitC:0,vitA:0},
+    {n:'Egusi Soup',e:'🥣',serv:'1 cup',cal:300,sug:1,tsug:2,sod:650,pro:14,sat:6,carb:12,vitD:0,calcium:120,iron:3,pot:520,vitC:18,vitA:300},
+    {n:'Efo Riro',e:'🥬',serv:'1 cup',cal:240,sug:1,tsug:3,sod:600,pro:12,sat:5,carb:9,vitD:0,calcium:160,iron:4,pot:560,vitC:25,vitA:420},
+    {n:'Okra Soup',e:'🍲',serv:'1 cup',cal:200,sug:1,tsug:3,sod:580,pro:11,sat:4,carb:11,vitD:0,calcium:130,iron:2.5,pot:480,vitC:20,vitA:280},
+    {n:'Pepper Soup',e:'🌶️',serv:'1 bowl',cal:180,sug:0,tsug:1,sod:620,pro:20,sat:3,carb:4,vitD:0,calcium:40,iron:2,pot:420,vitC:8,vitA:60},
+    {n:'Moi Moi',e:'🫘',serv:'1 piece',cal:200,sug:1,tsug:2,sod:380,pro:11,sat:3,carb:18,vitD:0,calcium:50,iron:2.6,pot:430,vitC:3,vitA:80},
+    {n:'Akara',e:'🟤',serv:'3 balls',cal:230,sug:1,tsug:1,sod:320,pro:9,sat:4,carb:18,vitD:0,calcium:45,iron:2.3,pot:380,vitC:1,vitA:20},
+    {n:'Beans (Ewa)',e:'🫘',serv:'1 cup',cal:250,sug:1,tsug:2,sod:350,pro:15,sat:1,carb:40,vitD:0,calcium:70,iron:3.6,pot:600,vitC:2,vitA:10},
+    {n:'Dodo (Fried Plantain)',e:'🍌',serv:'1 cup',cal:320,sug:14,tsug:18,sod:8,pro:2,sat:4,carb:48,vitD:0,calcium:5,iron:0.8,pot:540,vitC:18,vitA:90},
+    {n:'Boiled Plantain',e:'🍌',serv:'1 cup',cal:215,sug:12,tsug:22,sod:5,pro:2,sat:0.2,carb:57,vitD:0,calcium:5,iron:0.9,pot:640,vitC:22,vitA:100},
+    {n:'Pounded Yam',e:'🍠',serv:'1 cup',cal:230,sug:0,tsug:1,sod:10,pro:3,sat:0.1,carb:55,vitD:0,calcium:20,iron:1,pot:670,vitC:12,vitA:0},
+    {n:'Eba / Garri',e:'🟡',serv:'1 cup',cal:250,sug:0,tsug:0,sod:8,pro:1,sat:0.1,carb:62,vitD:0,calcium:10,iron:0.5,pot:80,vitC:0,vitA:0},
+    {n:'Amala',e:'🟤',serv:'1 cup',cal:200,sug:0,tsug:1,sod:6,pro:2,sat:0.2,carb:50,vitD:0,calcium:15,iron:1.2,pot:420,vitC:4,vitA:0},
+    {n:'Suya',e:'🍢',serv:'1 stick',cal:230,sug:0,tsug:0,sod:480,pro:24,sat:6,carb:3,vitD:0,calcium:20,iron:2.4,pot:330,vitC:0,vitA:0},
+    {n:'Grilled Chicken',e:'🍗',serv:'1 piece',cal:190,sug:0,tsug:0,sod:380,pro:28,sat:2.5,carb:0,vitD:0.1,calcium:15,iron:1,pot:250,vitC:0,vitA:10},
+    {n:'Fried Chicken',e:'🍗',serv:'1 piece',cal:320,sug:0,tsug:0,sod:520,pro:24,sat:7,carb:8,vitD:0.1,calcium:18,iron:1.3,pot:240,vitC:0,vitA:15},
+    {n:'Jollof Spaghetti',e:'🍝',serv:'1 cup',cal:310,sug:3,tsug:5,sod:560,pro:9,sat:3,carb:50,vitD:0,calcium:25,iron:2,pot:260,vitC:6,vitA:70},
+    {n:'Plantain Porridge',e:'🍲',serv:'1 cup',cal:290,sug:10,tsug:16,sod:420,pro:5,sat:3,carb:52,vitD:0,calcium:40,iron:2,pot:600,vitC:18,vitA:160},
+    {n:'Yam Porridge (Asaro)',e:'🍲',serv:'1 cup',cal:280,sug:1,tsug:3,sod:450,pro:5,sat:3,carb:50,vitD:0,calcium:35,iron:1.8,pot:650,vitC:14,vitA:120}
+  ],
+  common:[
+    {n:'Apple (medium)',e:'🍎',serv:'1 fruit',cal:95,sug:0,tsug:19,sod:2,pro:0.5,sat:0,carb:25,vitD:0,calcium:11,iron:0.2,pot:195,vitC:8,vitA:5},
+    {n:'Banana',e:'🍌',serv:'1 fruit',cal:105,sug:0,tsug:14,sod:1,pro:1.3,sat:0.1,carb:27,vitD:0,calcium:6,iron:0.3,pot:422,vitC:10,vitA:4},
+    {n:'Boiled Egg',e:'🥚',serv:'1 egg',cal:78,sug:0,tsug:0,sod:62,pro:6,sat:1.6,carb:0.6,vitD:1.1,calcium:25,iron:0.6,pot:63,vitC:0,vitA:75},
+    {n:'Bread (2 slices)',e:'🍞',serv:'2 slices',cal:160,sug:2,tsug:3,sod:300,pro:6,sat:0.6,carb:30,vitD:0,calcium:80,iron:1.8,pot:80,vitC:0,vitA:0},
+    {n:'Milk (1 cup)',e:'🥛',serv:'1 cup',cal:120,sug:0,tsug:12,sod:115,pro:8,sat:4.5,carb:12,vitD:2.9,calcium:300,iron:0,pot:380,vitC:0,vitA:150},
+    {n:'Orange',e:'🍊',serv:'1 fruit',cal:62,sug:0,tsug:12,sod:0,pro:1.2,sat:0,carb:15,vitD:0,calcium:52,iron:0.1,pot:237,vitC:70,vitA:14},
+    {n:'Yogurt',e:'🥤',serv:'1 cup',cal:150,sug:8,tsug:20,sod:100,pro:9,sat:2,carb:20,vitD:0,calcium:300,iron:0,pot:380,vitC:2,vitA:30},
+    {n:'Oatmeal',e:'🥣',serv:'1 cup',cal:158,sug:0,tsug:1,sod:115,pro:6,sat:0.5,carb:27,vitD:0,calcium:21,iron:2,pot:164,vitC:0,vitA:0}
+  ]
+};
+var _cuisine='naija';
+
+function buildResultFromFood(f){
+  // Mirror buildResult's scoring/verdict logic, marked as estimate
+  var sugar=f.sug, sodium=f.sod, prot=f.pro, cals=f.cal, satf=f.sat, carb=f.carb;
+  var isEstimate=true;
+  var score=70;
+  if(sugar>10)score-=35;else if(sugar>5)score-=15;
+  if(sodium>500)score-=25;else if(sodium>300)score-=10;
+  if(prot<3)score-=15;else if(prot<5)score-=8;
+  if(satf>5)score-=10;
+  if(prot>=8)score+=10;if(sugar<=2)score+=10;
+  if(sugar<=5&&sodium<=200)score+=15;
+  score=Math.max(5,Math.min(100,score));
+  var kidSkip=sugar>10||sodium>600;
+  var adultWarn=sodium>900||sugar>30;
+  var pairings=[];
+  if(prot<5)pairings.push('🥚 Add protein (egg, chicken)');
+  if(sodium>500)pairings.push('💧 Drink water — balance the salt');
+  if(f.vitC<5)pairings.push('🍊 Add fruit for vitamin C');
+  pairings.push('🥬 Add veggies for fiber & vitamins');
+  return {
+    prod:f.n, serv:f.serv, servG:0, isEstimate:isEstimate,
+    sugar:sugar, totalSug:f.tsug, sodium:sodium, prot:prot, cals:cals, satf:satf, carb:carb,
+    vitD:f.vitD, calcium:f.calcium, iron:f.iron, potassium:f.pot, vitC:f.vitC, vitA:f.vitA,
+    rSug:sugar, rAsug:sugar, rSod:sodium, rPro:prot, rCal:cals, rSat:satf, rCarb:carb,
+    rKidSkip:kidSkip, rAdultSkip:adultWarn,
+    kidSkip:kidSkip, adultSkip:adultWarn, adultWatch:adultWarn,
+    kidReason:kidSkip?'High in sugar or salt for kids — smaller portion or pair wisely.':'Good home-cooked option for kids in a normal portion.',
+    adultReason:adultWarn?'Watch sodium/sugar — moderate the portion.':'Solid balanced choice for adults.',
+    score:score, pairings:pairings.slice(0,4)
+  };
+}
+
+function renderFoodGrid(){
+  var grid=document.getElementById('foodGrid');
+  if(!grid)return;
+  var list=FOOD_DB[_cuisine]||[];
+  var html='';
+  list.forEach(function(f,i){
+    html+='<button type="button" onclick="pickFood(\''+_cuisine+'\','+i+')" style="padding:11px 9px;border-radius:10px;border:1px solid #2a2d3a;background:#1a1d27;color:#f0f4ff;font-size:12px;cursor:pointer;text-align:left;line-height:1.3">'+f.e+' '+f.n+'<br><span style="color:#8b92a8;font-size:9px">'+f.serv+' · '+f.cal+' kcal</span></button>';
+  });
+  grid.innerHTML=html;
+}
+
+function setCuisine(el,cuisine){
+  _cuisine=cuisine;
+  document.querySelectorAll('.cuisine-tab').forEach(function(t){t.classList.remove('selected');});
+  el.classList.add('selected');
+  renderFoodGrid();
+}
+
+function pickFood(cuisine,i){
+  var f=FOOD_DB[cuisine][i];
+  if(!f)return;
+  _curResult=buildResultFromFood(f);
+  _curServings=1;
+  renderResults(_curResult,1);
+  document.getElementById('rName').scrollIntoView({behavior:'smooth',block:'start'});
+}
+
+async function analyzeTyped(){
+  var q=document.getElementById('typeFood').value.trim();
+  if(!q){return;}
+  var key=getKey();
+  if(!key){setStatus('❌ Enter your API key first');return;}
+  setStatus('🔎 Estimating '+q+'…');
+  try{
+    var resp=await fetch('https://api.anthropic.com/v1/messages',{
+      method:'POST',
+      headers:{'Content-Type':'application/json','x-api-key':key,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},
+      body:JSON.stringify({model:'claude-haiku-4-5',max_tokens:500,messages:[{role:'user',content:[{type:'text',text:'Estimate the nutrition profile for ONE typical serving of: '+q+'. Use standard nutrition data (including Nigerian/African dishes). Output ONLY these lines with a number for each:\nSource: ESTIMATE\nProduct name: \nServing size: \nCalories: \nTotal Fat: \nSaturated Fat: \nSodium: \nTotal Carbohydrate: \nTotal Sugars: \nAdded Sugars: \nProtein: \nVitamin D: \nCalcium: \nIron: \nPotassium: \nVitamin C: \nVitamin A: \nAdded Sugars is almost always 0 for home-cooked food. Use 0 only when truly absent.'}]}]})
+    });
+    var bt=await resp.text();
+    if(!resp.ok)throw new Error('HTTP '+resp.status+': '+bt.slice(0,120));
+    var j=JSON.parse(bt);
+    var text='';
+    for(var i=0;i<(j.content||[]).length;i++){if(j.content[i].type==='text'){text=j.content[i].text;break;}}
+    if(!text)throw new Error('Empty response');
+    setStatus('✅ Got estimate!');
+    _curResult=buildResult(text);
+    _curServings=1;
+    renderResults(_curResult,1);
+    document.getElementById('rName').scrollIntoView({behavior:'smooth',block:'start'});
+  }catch(e){setStatus('❌ '+e.message);}
+}
 
 function buildResult(t){
   var srcRaw=strFrom(t,[/source\s*[:\-]\s*([^\n]+)/i],'LABEL');
@@ -1048,6 +1189,7 @@ document.addEventListener('DOMContentLoaded', function(){
   // Action buttons
   document.getElementById('btnAte').addEventListener('click', confirmAte);
   var bp=document.getElementById('btnPlan'); if(bp) bp.addEventListener('click', planFood);
+  renderFoodGrid();
   document.getElementById('btnBrowse').addEventListener('click', function(){document.getElementById('actionRow').style.display='none';});
   document.getElementById('btnAgain').addEventListener('click', resetAll);
 
